@@ -1,0 +1,22 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto',sans-serif;
+}
+body{
+  background-color: black;
+  overflow-x: hidden;
+}
+html{
+  scroll-behavior: smooth;
+  scroll-padding-top: 10vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar{
+  width: 8px;
+}
+::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background: white;
+}
