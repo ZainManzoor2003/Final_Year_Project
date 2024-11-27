@@ -30,34 +30,34 @@ const UpdateModal = ({ show, onClose, operator }) => {
     const { name, username, password, number, address } = currentOperator;
 
     if (!name || !username || !number || !address || !password) {
-        alert("Any Field is required.");
-        return false;
+      alert("Any Field is required.");
+      return false;
     }
 
     // Check if username only contains lowercase letters, underscores, and digits
     if (!/^[a-z0-9_]+$/.test(username)) {
-        alert("Username should contain only lowercase letters, underscores, and digits.");
-        return false;
+      alert("Username should contain only lowercase letters, underscores, and digits.");
+      return false;
     }
 
     // Check if password contains only allowed characters and no whitespace
     if (!/^[a-z0-9@_]+$/.test(password)) {
-        alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
-        return false;
+      alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+      return false;
     }
 
     // Check if number contains only digits
     if (!/^\d+$/.test(number)) {
-        alert("Number should contain only digits.");
-        return false;
+      alert("Number should contain only digits.");
+      return false;
     }
 
     return true;
-};
+  };
 
 
   const handleSubmit = async () => {
-    if(!validateFields()) return;
+    if (!validateFields()) return;
     try {
       await axios.post(`http://localhost:3001/updateOperator`, currentOperator)
         .then((res) => {
@@ -133,34 +133,34 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     const { name, username, password, number, address } = adminInfo;
 
     if (!name || !username || !number || !address || !password) {
-        alert("Any Field is required.");
-        return false;
+      alert("Any Field is required.");
+      return false;
     }
 
     // Check if username only contains lowercase letters, underscores, and digits
     if (!/^[a-z0-9_]+$/.test(username)) {
-        alert("Username should contain only lowercase letters, underscores, and digits.");
-        return false;
+      alert("Username should contain only lowercase letters, underscores, and digits.");
+      return false;
     }
 
     // Check if password contains only allowed characters and no whitespace
     if (!/^[a-z0-9@_]+$/.test(password)) {
-        alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
-        return false;
+      alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+      return false;
     }
 
     // Check if number contains only digits
     if (!/^\d+$/.test(number)) {
-        alert("Number should contain only digits.");
-        return false;
+      alert("Number should contain only digits.");
+      return false;
     }
 
     return true;
-};
+  };
 
 
   const handleSubmit = async () => {
-    if(!validateFields()) return;
+    if (!validateFields()) return;
     try {
       await axios.post(`http://localhost:3001/updateOperator`, admin)
         .then((res) => {
@@ -219,15 +219,6 @@ const AddModal = ({ show, onClose }) => {
 
   const [currentOperator, setCurrentOperator] = useState({ role: 'operator', enable: true });
 
-
-  if (!show) return null;
-  useEffect(() => {
-    generatePassword();
-  }, []);
-
-
-
-  // Function to generate a random password
   const generatePassword = () => {
     // Define the allowed characters: lowercase letters, numbers, and @, _
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789@_";
@@ -239,8 +230,20 @@ const AddModal = ({ show, onClose }) => {
       password += characters.charAt(randomIndex);
     }
 
-    setCurrentPensioner(prev => ({ ...prev, password }));
+    setCurrentOperator(prev => ({ ...prev, password }));
   };
+
+
+  useEffect(() => {
+    generatePassword();
+  }, []);
+
+  if (!show) return null;
+
+
+
+  // Function to generate a random password
+  
 
   // // Function to generate a username based on the name
   const generateUsername = (name) => {

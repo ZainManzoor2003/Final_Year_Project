@@ -6,8 +6,18 @@
     "orientation": "portrait",
     "icon": "./assets/icon.gif",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "permissions": [],
-    "plugins": [],
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-redux"
+        ]
+      }
+    },
+    "plugins": [
+      "expo-video"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

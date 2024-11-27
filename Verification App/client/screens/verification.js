@@ -77,7 +77,7 @@ export default function Verification({ navigation }) {
     if (startVerify) {
       const incrementSessions = async () => {
         try {
-          const res = await axios.post('http://192.168.100.92:3001/incrementSessions', currentUser)
+          const res = await axios.post('http://192.168.1.79:3001/incrementSessions', currentUser)
           setCurrentUser(pre => ({ ...pre, totalSessions: res.data.totalSessions }))
         } catch (error) {
           console.log(error.message);
@@ -112,7 +112,7 @@ export default function Verification({ navigation }) {
     videoUri && saveVideo()
   }, [videoUri])
   useEffect(() => {
-    // videoUri && faceRecognize();
+    videoUri && faceRecognize();
 
   }, [videoUri])
 
@@ -126,7 +126,7 @@ export default function Verification({ navigation }) {
     // Function to check the status of a task ID
     const checkTaskStatus = async (id) => {
       try {
-        const response = await axios.get(`https://e334-121-52-151-226.ngrok-free.app/result/${id}`);
+        const response = await axios.get(`https://5db5-202-142-147-154.ngrok-free.app/result/${id}`);
 
         if (response.data) {
           console.log('Response for ID:', id, response.data);
@@ -208,8 +208,8 @@ export default function Verification({ navigation }) {
 
   const showAlertWithAnimation = (isSuccess) => {
     Alert.alert(
-      'Verification Result',
-      isSuccess ? '✔️ You are verified successfully!' : '❌ You are not verified.',
+      'تصدیق کا نتیجہ',
+      isSuccess ? '✔️ آپ کامیابی سے تصدیق شدہ ہیں' : '❌ آپ کی تصدیق نہیں ہو سکی',
       [
         {
           text: 'OK',
@@ -334,7 +334,7 @@ export default function Verification({ navigation }) {
       name: currentUser.cnic + '_' + `${index + 1}` + '_' + currentUser.totalSessions + '.mp4',
     });
     try {
-      let response = await axios.post('https://5c0d-103-152-101-243.ngrok-free.app/convert', formData, {
+      let response = await axios.post('http://192.168.1.79:5001/convert', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -369,7 +369,7 @@ export default function Verification({ navigation }) {
     try {
       // console.log(videoUri);
       // Send the POST request
-      const response = await axios.post('https://e334-121-52-151-226.ngrok-free.app/process',
+      const response = await axios.post('https://5db5-202-142-147-154.ngrok-free.app/process',
         formData2,
         {
           headers: {

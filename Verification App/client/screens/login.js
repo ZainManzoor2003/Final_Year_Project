@@ -8,8 +8,8 @@ import CreateContextApi from '../ContextApi/CreateContextApi';
 import questions from '../assets/questions'
 
 export default function Login({ navigation }) {
-    const [cnic, setCnic] = useState('3520282047651')
-    const [password, setPassword] = useState('zain123')
+    const [cnic, setCnic] = useState('3520282040461')
+    const [password, setPassword] = useState('65tg7qll')
     const { ipAddress, setCurrentUser } = useContext(CreateContextApi);
 
     const handleLogin = async () => {

@@ -17,7 +17,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CONVERTED_FOLDER, exist_ok=True)
 
 # Flask API URL where the .wav file will be sent
-FLASK_API_URL = "https://e535-111-68-102-12.ngrok-free.app/upload"
+FLASK_API_URL = "https://0905-202-142-147-154.ngrok-free.app/upload"
 
 
 @app.route("/convert", methods=["POST"])

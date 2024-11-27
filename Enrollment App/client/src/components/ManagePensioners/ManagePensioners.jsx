@@ -29,6 +29,7 @@ const Verification = ({ show, onClose }) => {
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null)
     const [isRecording, setIsRecording] = useState(false);
+    const [videoFiles, setVideoFiles] = useState([]);
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
     const [cameraDisabled, setCameraDisabled] = useState(false);
@@ -60,6 +61,34 @@ const Verification = ({ show, onClose }) => {
     }, [timer]);
 
     useEffect(() => {
+        const takeScreenshots = async () => {
+            alert('taking screenshots api called')
+            const formData = new FormData();
+
+            // Append each video blob to FormData
+            videoFiles.forEach((blob, index) => {
+                formData.append('videos', blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
+            });
+
+            try {
+                const response = await axios.post('http://192.168.1.79:5001/extract_images', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                console.log('Videos uploaded successfully:', response.data);
+            } catch (error) {
+                console.error('Error uploading videos:', error);
+            }
+        }
+        if (videoFiles.length == 1) {
+            takeScreenshots()
+        }
+        console.log(videoFiles);
+        
+    }, [videoFiles])
+    useEffect(() => {
+
         if (videoUploaded) {
             setIndex(index + 1);
             if (index === 4) {
@@ -84,7 +113,7 @@ const Verification = ({ show, onClose }) => {
 
     useEffect(() => {
         const changeQuestion = async () => {
-            console.log('change question', index);
+            // console.log('change question', index);
 
             if (randomQuestions.length > 0 && index <= 4 && startVerify) {
                 setRecordingDisabled(true);
@@ -113,7 +142,8 @@ const Verification = ({ show, onClose }) => {
     const handleStartCaptureClick = useCallback(() => {
         setIsRecording(true)
         mediaRecorderRef.current = RecordRTC(webcamRef.current.stream, {
-            type: "video"
+            type: "video/mp4",
+            mimeType: 'video/mp4'
         })
         mediaRecorderRef.current.startRecording()
         mediaRecorderRef.current.ondataavailable = handleDataAvailable
@@ -137,7 +167,7 @@ const Verification = ({ show, onClose }) => {
                     const blob = new Blob(recordedChunks, {
                         type: "video/mp4"
                     })
-
+                    setVideoFiles(prev => [...prev, blob]);
                     const formData = new FormData();
                     formData.append("video", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
 
@@ -156,7 +186,34 @@ const Verification = ({ show, onClose }) => {
             }, 2000);
 
         }
+
         saveVideo()
+
+    }, [recordedChunks])
+
+    useEffect(() => {
+        const convertToWav = async () => {
+            if (recordedChunks.length) {
+                const blob = new Blob(recordedChunks, {
+                    type: "video/mp4"
+                })
+                const formData = new FormData();
+                formData.append("files", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
+
+                try {
+                    let response = await axios.post('http://192.168.1.79:5001/convert', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                        responseType: 'json'
+                    });
+                } catch (error) {
+                    Alert.alert('Error uploading mp4 file to convert it into wav', error.message);
+                }
+            }
+        }
+
+        // convertToWav()
 
     }, [recordedChunks])
 
@@ -327,14 +384,9 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
 };
 
 const AddModal = ({ show, onClose, updateVerify }) => {
-    const navigate = useNavigate();
     const { currentPensionerData, setCurrentPensionerData } = useContext(CreateContextApi);
 
     const [currentPensioner, setCurrentPensioner] = useState({ enable: true });
-
-    useEffect(() => {
-        generatePassword();
-    }, []);
 
     const generatePassword = () => {
         const characters = "abcdefghijklmnopqrstuvwxyz0123456789@_";
@@ -348,6 +400,14 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
         setCurrentPensioner(prev => ({ ...prev, password }));
     };
+
+    useEffect(() => {
+        generatePassword();
+    }, []);
+
+    if (!show) return null;
+
+
 
     const generateUsername = (name) => {
         if (!name) return "";
@@ -391,22 +451,22 @@ const AddModal = ({ show, onClose, updateVerify }) => {
     };
 
     const handleSubmit = async () => {
+        updateVerify();
         // if (!validateFields()) return;
 
-        try {
-            // const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
-            // alert(response.data.mes);
-            onClose();
+        // try {
+        //     const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
+        //     alert(response.data.mes);
+        //     onClose();
 
-            // if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
-            updateVerify();
-            // }
-        } catch (error) {
-            alert(error.message);
-        }
+        //     if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
+        //     }
+        // } catch (error) {
+        //     alert(error.message);
+        // }
     };
 
-    if (!show) return null;
+
 
     return (
         <div className="modal-overlay">
