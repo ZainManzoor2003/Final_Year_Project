@@ -80,30 +80,35 @@ const UpdateModal = ({ show, onClose, operator }) => {
           type="text"
           value={currentOperator.name}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
+          maxLength={10}
         />
         <label>Username:</label>
         <input
           type="text"
           value={currentOperator.username}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, username: e.target.value }))}
+          maxLength={14}
         />
         <label>Password:</label>
         <input
           type="text"
           value={currentOperator.password}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
+          maxLength={13}
         />
         <label>Number:</label>
         <input
           type="text"
           value={currentOperator.number}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
+          maxLength={11}
         />
         <label>Address:</label>
         <input
           type="text"
           value={currentOperator.address}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
+          maxLength={35}
         />
         <button onClick={handleSubmit}>Update</button>
       </div>
@@ -183,30 +188,35 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
           type="text"
           value={admin.name}
           onChange={(e) => setAdmin(prev => ({ ...prev, name: e.target.value }))}
+          maxLength={10}
         />
         <label>Username:</label>
         <input
           type="text"
           value={admin.username}
           onChange={(e) => setAdmin(prev => ({ ...prev, username: e.target.value }))}
+          maxLength={14}
         />
         <label>Password:</label>
         <input
           type="text"
           value={admin.password}
           onChange={(e) => setAdmin(prev => ({ ...prev, password: e.target.value }))}
+          maxLength={13}
         />
         <label>Number:</label>
         <input
           type="text"
           value={admin.number}
           onChange={(e) => setAdmin(prev => ({ ...prev, number: e.target.value }))}
+          maxLength={11}
         />
         <label>Address:</label>
         <input
           type="text"
           value={admin.address}
           onChange={(e) => setAdmin(prev => ({ ...prev, address: e.target.value }))}
+          maxLength={35}
         />
         <button onClick={handleSubmit}>Update</button>
       </div>
@@ -311,6 +321,7 @@ const AddModal = ({ show, onClose }) => {
           type="text"
           value={currentOperator.name || ''}
           onChange={handleNameChange}
+          maxLength={10}
         />
 
         <label>Username (auto-generated):</label>
@@ -325,6 +336,7 @@ const AddModal = ({ show, onClose }) => {
           type="text"
           value={currentOperator.cnic || ''}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, cnic: e.target.value }))}
+          maxLength={13}
         />
 
         <label>Email:</label>
@@ -332,6 +344,7 @@ const AddModal = ({ show, onClose }) => {
           type="text"
           value={currentOperator.email || ''}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, email: e.target.value }))}
+          maxLength={30}
         />
 
         <label>Password (auto-generated):</label>
@@ -346,6 +359,7 @@ const AddModal = ({ show, onClose }) => {
           type="text"
           value={currentOperator.number || ''}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
+          maxLength={11}
         />
 
         <label>Address:</label>
@@ -353,6 +367,7 @@ const AddModal = ({ show, onClose }) => {
           type="text"
           value={currentOperator.address || ''}
           onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
+          maxLength={35}
         />
 
         <label>DOB:</label>

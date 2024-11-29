@@ -1,11 +1,14 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-export default function Input({ maxLength,text,value,setValue }) {
+export default function Input({ maxLength, text, value, setValue }) {
     return (
         <View>
             <Text style={styles.text}>{text}</Text>
-            <TextInput style={styles.input} maxLength={maxLength}value={value} onChangeText={(text)=>setValue(text)}></TextInput>
+            <TextInput
+                style={styles.input} maxLength={maxLength} value={value} onChangeText={(text) => setValue(text)}
+                secureTextEntry={text=='پاس ورڈ' && true}>
+            </TextInput>
         </View>
     )
 }
@@ -14,7 +17,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
         fontWeight: '500',
-        textAlign:'right'
+        textAlign: 'right'
     },
     input: {
         height: 40,
@@ -23,6 +26,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 20,
         padding: 10,
-        textAlign:'right'
+        textAlign: 'right'
     },
 })

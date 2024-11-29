@@ -29,11 +29,13 @@ const Verification = ({ show, onClose }) => {
     const webcamRef = useRef(null);
     const mediaRecorderRef = useRef(null)
     const [isRecording, setIsRecording] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     const [videoFiles, setVideoFiles] = useState([]);
     const [recordedChunks, setRecordedChunks] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
     const [cameraDisabled, setCameraDisabled] = useState(false);
     const [videoUploaded, setVideoUploaded] = useState(false)
+    const [videoRecorded, setVideoRecorded] = useState(false)
     const [submit, setSubmit] = useState(null);
     const [recordingDisabled, setRecordingDisabled] = useState(false);
     const [videoUrl, setVideoUrl] = useState('');
@@ -82,10 +84,10 @@ const Verification = ({ show, onClose }) => {
             }
         }
         if (videoFiles.length == 1) {
-            takeScreenshots()
+            // takeScreenshots()
         }
         console.log(videoFiles);
-        
+
     }, [videoFiles])
     useEffect(() => {
 
@@ -121,7 +123,7 @@ const Verification = ({ show, onClose }) => {
                 setQuestion(randomQuestions[index].text);
                 setTimeout(() => {
                     setRecordingDisabled(false);
-                }, 5000);
+                }, 4000);
             }
         };
         changeQuestion();
@@ -134,6 +136,8 @@ const Verification = ({ show, onClose }) => {
     const handleDataAvailable = useCallback(({ data }) => {
         {
             if (data.size > 0) {
+                console.log('on data available');
+
                 setRecordedChunks((pre) => pre.concat(data))
             }
         }
@@ -141,6 +145,7 @@ const Verification = ({ show, onClose }) => {
 
     const handleStartCaptureClick = useCallback(() => {
         setIsRecording(true)
+        setVideoRecorded(false)
         mediaRecorderRef.current = RecordRTC(webcamRef.current.stream, {
             type: "video/mp4",
             mimeType: 'video/mp4'
@@ -156,7 +161,27 @@ const Verification = ({ show, onClose }) => {
             const blobs = mediaRecorderRef.current.getBlob()
             setRecordedChunks([blobs])
         })
+        setVideoRecorded(true)
     }, [setIsRecording, mediaRecorderRef])
+
+    // const handlePause = useCallback(() => {
+    //     mediaRecorderRef.current.stopRecording(() => {
+    //         const newBlob = mediaRecorderRef.current.getBlob()
+    //         setRecordedChunks((prevChunks) => [...prevChunks, newBlob]);
+    //     })
+    //     setIsPaused(true);
+    // }, [mediaRecorderRef])
+    
+
+    // const handleResume = useCallback(() => {
+    //     mediaRecorderRef.current = RecordRTC(webcamRef.current.stream, {
+    //         type: "video/mp4",
+    //         mimeType: 'video/mp4'
+    //     })
+    //     mediaRecorderRef.current.startRecording()
+    //     mediaRecorderRef.current.ondataavailable = handleDataAvailable // Resume recording
+    //     setIsPaused(false);
+    // }, [mediaRecorderRef, webcamRef, handleDataAvailable])
 
     useEffect(() => {
         const saveVideo = () => {
@@ -213,22 +238,9 @@ const Verification = ({ show, onClose }) => {
             }
         }
 
-        // convertToWav()
+        videoRecorded && convertToWav()
 
-    }, [recordedChunks])
-
-    const download = useCallback(async () => {
-
-        // const url = URL.createObjectURL(blob)
-        // const a = document.createElement('a')
-        // document.body.appendChild(a)
-        // a.style = "display: none"
-        // a.href = url
-        // a.download = 'react-webcam-stream-capture.webm'
-        // a.click()
-        // window.URL.revokeObjectURL(url)
-
-    }, [recordedChunks])
+    }, [videoRecorded])
 
     const saveVideo = async () => {
         setQuestion('انتظار فرمائیں');
@@ -258,15 +270,19 @@ const Verification = ({ show, onClose }) => {
                                 />
                             </div>
                             <div style={styles.buttonContainer}>
-                                {!isRecording ? (
+                                {!isRecording ?
                                     <button style={styles.button} disabled={recordingDisabled} onClick={handleStartCaptureClick}>
                                         Start Recording
                                     </button>
-                                ) : (
-                                    <button disabled={seconds <= 5} style={styles.button} onClick={handleStopCaptureClick}>
-                                        Stop Recording
-                                    </button>
-                                )}
+                                    :
+                                    <>
+                                        {/* {isPaused ? <button style={styles.button} onClick={handleResume}>Resume Recording</button>
+                                            : <button style={styles.button} onClick={handlePause}>Pause Recording</button>} */}
+                                        <button disabled={seconds <= 5} style={styles.button} onClick={handleStopCaptureClick}>
+                                            Stop Recording
+                                        </button>
+                                    </>
+                                }
                             </div>
                         </>
                     ) : (
@@ -352,30 +368,35 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
                     type="text"
                     value={currentPensioner.name}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, name: e.target.value }))}
+                    maxLength={10}
                 />
                 <label>Username:</label>
                 <input
                     type="text"
                     value={currentPensioner.username}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, username: e.target.value }))}
+                    maxLength={14}
                 />
                 <label>Password:</label>
                 <input
                     type="text"
                     value={currentPensioner.password}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, password: e.target.value }))}
+                    maxLength={14}
                 />
                 <label>Number:</label>
                 <input
                     type="text"
                     value={currentPensioner.number}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, number: e.target.value }))}
+                    maxLength={11}
                 />
                 <label>Address:</label>
                 <input
                     type="text"
                     value={currentPensioner.address}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
+                    maxLength={35}
                 />
                 <button onClick={handleSubmit}>Update</button>
             </div>
@@ -451,19 +472,19 @@ const AddModal = ({ show, onClose, updateVerify }) => {
     };
 
     const handleSubmit = async () => {
-        updateVerify();
-        // if (!validateFields()) return;
-
-        // try {
-        //     const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
-        //     alert(response.data.mes);
-        //     onClose();
-
-        //     if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
-        //     }
-        // } catch (error) {
-        //     alert(error.message);
-        // }
+        if (!validateFields()) return;
+        
+        try {
+            const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
+            alert(response.data.mes);
+            onClose();
+            
+            if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
+                updateVerify();
+            }
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
 
@@ -479,6 +500,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     type="text"
                     value={currentPensioner.name || ''}
                     onChange={handleNameChange}
+                    maxLength={10}
                 />
 
                 <label>Username (auto-generated):</label>
@@ -504,6 +526,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     type="text"
                     value={currentPensioner.email || ''}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, email: e.target.value }))}
+                    maxLength={30}
                 />
 
                 <label>Password (auto-generated):</label>
@@ -617,30 +640,35 @@ const UpdateAccountModal = ({ show, onClose, operatorInfo }) => {
                     type="text"
                     value={operator.name}
                     onChange={(e) => setOperator(prev => ({ ...prev, name: e.target.value }))}
+                    maxLength={10}
                 />
                 <label>Username:</label>
                 <input
                     type="text"
                     value={operator.username}
                     onChange={(e) => setOperator(prev => ({ ...prev, username: e.target.value }))}
+                    maxLength={14}
                 />
                 <label>Password:</label>
                 <input
                     type="text"
                     value={operator.password}
                     onChange={(e) => setOperator(prev => ({ ...prev, password: e.target.value }))}
+                    maxLength={14}
                 />
                 <label>Number:</label>
                 <input
                     type="text"
                     value={operator.number}
                     onChange={(e) => setOperator(prev => ({ ...prev, number: e.target.value }))}
+                    maxLength={11}
                 />
                 <label>Address:</label>
                 <input
                     type="text"
                     value={operator.address}
                     onChange={(e) => setOperator(prev => ({ ...prev, address: e.target.value }))}
+                    maxLength={35}
                 />
                 <button onClick={handleSubmit}>Update</button>
             </div>

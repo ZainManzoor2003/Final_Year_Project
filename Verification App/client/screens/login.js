@@ -39,7 +39,7 @@ export default function Login({ navigation }) {
             <Text style={styles.pageTitle}>لاگ ان کریں</Text>
             <View style={{ margin: 20 }}>
                 <Input text={'شناختی کارڈ نمبر'} setValue={setCnic} value={cnic} maxLength={13} />
-                <Input text={'پاس ورڈ'} setValue={setPassword} value={password} />
+                <Input text={'پاس ورڈ'} setValue={setPassword} value={password}/>
             </View>
             <Button text={'لاگ ان'} clickEvent={handleLogin} />
             {/* <Text style={{ textAlign: 'center' }}> Not Registered Please <Text style={{ color: 'red' }} onPress={() => navigation.navigate('Register')}>Register </Text></Text> */}
