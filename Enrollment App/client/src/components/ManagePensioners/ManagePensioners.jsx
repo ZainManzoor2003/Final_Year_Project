@@ -6,6 +6,8 @@ import axios from 'axios';
 import CreateContextApi from '../../ContextApi/CreateContextApi';
 import Webcam from 'react-webcam';
 import RecordRTC from 'recordrtc'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CountDownTimer = ({ isRecording, seconds, setSeconds }) => {
     useEffect(() => {
@@ -93,8 +95,12 @@ const Verification = ({ show, onClose }) => {
 
         if (videoUploaded) {
             setIndex(index + 1);
-            if (index === 4) {
+            if (index === 10) {
                 setVideoUploaded(false);
+                toast.success(`Penioner Enrolled Successfully`, {
+                    position: 'top-center',
+                    autoClose: 3000
+                })
                 // setCameraDisabled(true);
                 onClose()
                 // setSubmit(true);
@@ -117,7 +123,7 @@ const Verification = ({ show, onClose }) => {
         const changeQuestion = async () => {
             // console.log('change question', index);
 
-            if (randomQuestions.length > 0 && index <= 4 && startVerify) {
+            if (randomQuestions.length > 0 && index <= 10 && startVerify) {
                 setRecordingDisabled(true);
                 await playSound(randomQuestions[index].file);
                 setQuestion(randomQuestions[index].text);
@@ -171,7 +177,7 @@ const Verification = ({ show, onClose }) => {
     //     })
     //     setIsPaused(true);
     // }, [mediaRecorderRef])
-    
+
 
     // const handleResume = useCallback(() => {
     //     mediaRecorderRef.current = RecordRTC(webcamRef.current.stream, {
@@ -226,7 +232,7 @@ const Verification = ({ show, onClose }) => {
                 formData.append("files", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
 
                 try {
-                    let response = await axios.post('http://192.168.1.79:5001/convert', formData, {
+                    let response = await axios.post('http://localhost:5001/convert', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data',
                         },
@@ -238,7 +244,7 @@ const Verification = ({ show, onClose }) => {
             }
         }
 
-        videoRecorded && convertToWav()
+        // videoRecorded && convertToWav()
 
     }, [videoRecorded])
 
@@ -473,12 +479,12 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
     const handleSubmit = async () => {
         if (!validateFields()) return;
-        
+
         try {
             const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
             alert(response.data.mes);
             onClose();
-            
+
             if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
                 updateVerify();
             }
@@ -803,7 +809,7 @@ export default function ManagePensioners() {
                     onClose={() => { setShowVerificationModal(false); }}
                 // onUpdate={handleUpdate}
                 />
-                {/* <ToastContainer /> */}
+                <ToastContainer />
             </>
         </>
     )

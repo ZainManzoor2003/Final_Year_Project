@@ -19,7 +19,7 @@ export default function Login({ navigation }) {
         }
         else {
             // if (ipAddress) {
-                await axios.post(`http://192.168.100.92:3001/login`, { cnic: cnic, password: password })
+                await axios.post(`https://verification-zeta.vercel.app/login`, { cnic: cnic, password: password })
                     .then(async (res) => {
                         if (res.data.mes === 'Login Successfully') {
                             setCurrentUser({ name: res.data.user.name, cnic: res.data.user.cnic, totalSessions: res.data.user.sessions.length })

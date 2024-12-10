@@ -131,7 +131,7 @@ const addPensioner = async (req, res) => {
 };
 const addOperator = async (req, res) => {
     try {
-        let { name, username, number, cnic, email, password, address, enable } = req.body; // Extract email and password from request body
+        let { name, username, number, cnic, email, password, address, enable,role } = req.body; // Extract email and password from request body
         cnic = cnic.replace(/\s+/g, '');
         email = email.replace(/\s+/g, '');
         password = password.replace(/\s+/g, '');
@@ -146,7 +146,7 @@ const addOperator = async (req, res) => {
             res.send({ mes: 'Operator Already Registered' });
         } else {
             // Save the new pensioner
-            const newOperator = await UserModel({ name, username, number, cnic, email, password, address, enable }).save();
+            const newOperator = await UserModel({ name, username, number, cnic, email, password, address, enable,role }).save();
 
             if (newOperator) {
                 // Set up the email transporter

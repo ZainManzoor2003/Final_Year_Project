@@ -14,7 +14,6 @@ const Stack = createNativeStackNavigator();
 export default function Start() {
     const { currentUser } = useContext(CreateContextApi)
     let name = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1);
-    name='Zareena'
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName='Login'>

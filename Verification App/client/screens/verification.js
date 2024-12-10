@@ -77,7 +77,7 @@ export default function Verification({ navigation }) {
     if (startVerify) {
       const incrementSessions = async () => {
         try {
-          const res = await axios.post('http://192.168.100.92:3001/incrementSessions', currentUser)
+          const res = await axios.post('https://verification-zeta.vercel.app/incrementSessions', currentUser)
           setCurrentUser(pre => ({ ...pre, totalSessions: res.data.totalSessions }))
         } catch (error) {
           console.log(error.message);
@@ -127,6 +127,7 @@ export default function Verification({ navigation }) {
     const checkTaskStatus = async (id) => {
       try {
         const response = await axios.get(`http://202.142.147.3:5001/result/${id}`);
+        // const response = await axios.get(`https://5b72-121-52-151-227.ngrok-free.app/result/${id}`);
 
         if (response.data) {
           console.log('Response for ID:', id, response.data);
@@ -311,7 +312,7 @@ export default function Verification({ navigation }) {
     formData.append('cnic', currentUser.cnic)
 
     try {
-      const response = await axios.post('http://192.168.100.92:3001/upload', formData, {
+      const response = await axios.post('https://verification-zeta.vercel.app/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -319,7 +320,7 @@ export default function Verification({ navigation }) {
       console.log('Upload response', response.data);
 
     } catch (error) {
-      // console.error('Upload error', error);
+      console.error('Upload error', error);
     }
     setVideoUploaded(true)
 
@@ -334,7 +335,7 @@ export default function Verification({ navigation }) {
       name: currentUser.cnic + '_' + `${index + 1}` + '_' + currentUser.totalSessions + '.mp4',
     });
     try {
-      let response = await axios.post('https://8483-103-152-101-243.ngrok-free.app/convert', formData, {
+      let response = await axios.post('http://192.168.137.166:5001/convert', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -370,6 +371,7 @@ export default function Verification({ navigation }) {
       // console.log(videoUri);
       // Send the POST request
       const response = await axios.post('http://202.142.147.3:5001/process',
+      // const response = await axios.post('https://5b72-121-52-151-227.ngrok-free.app/process',
         formData2,
         {
           headers: {
