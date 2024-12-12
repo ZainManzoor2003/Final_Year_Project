@@ -66,7 +66,6 @@ const Verification = ({ show, onClose }) => {
 
     useEffect(() => {
         const takeScreenshots = async () => {
-            alert('taking screenshots api called')
             const formData = new FormData();
 
             // Append each video blob to FormData
@@ -75,7 +74,7 @@ const Verification = ({ show, onClose }) => {
             });
 
             try {
-                const response = await axios.post('http://192.168.1.79:5001/extract_images', formData, {
+                const response = await axios.post('http://localhost:5001/extract_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -85,10 +84,7 @@ const Verification = ({ show, onClose }) => {
                 console.error('Error uploading videos:', error);
             }
         }
-        if (videoFiles.length == 1) {
-            // takeScreenshots()
-        }
-        console.log(videoFiles);
+        videoFiles.length == 2 && takeScreenshots()
 
     }, [videoFiles])
     useEffect(() => {
@@ -224,29 +220,26 @@ const Verification = ({ show, onClose }) => {
 
     useEffect(() => {
         const convertToWav = async () => {
-            if (recordedChunks.length) {
-                const blob = new Blob(recordedChunks, {
-                    type: "video/mp4"
-                })
-                const formData = new FormData();
-                formData.append("files", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
+            const formData = new FormData();
 
-                try {
-                    let response = await axios.post('http://localhost:5001/convert', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        },
-                        responseType: 'json'
-                    });
-                } catch (error) {
-                    Alert.alert('Error uploading mp4 file to convert it into wav', error.message);
-                }
+            // Append each video blob to FormData
+            videoFiles.forEach((blob, index) => {
+                formData.append('files', blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
+            });
+            try {
+                let response = await axios.post('http://localhost:5001/convert', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    responseType: 'json'
+                });
+            } catch (error) {
+                Alert.alert('Error uploading mp4 file to convert it into wav', error.message);
             }
         }
+        videoFiles.length == 2 && convertToWav()
+    }, [videoFiles])
 
-        // videoRecorded && convertToWav()
-
-    }, [videoRecorded])
 
     const saveVideo = async () => {
         setQuestion('انتظار فرمائیں');
@@ -478,16 +471,16 @@ const AddModal = ({ show, onClose, updateVerify }) => {
     };
 
     const handleSubmit = async () => {
-        if (!validateFields()) return;
+        // if (!validateFields()) return;
 
         try {
-            const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
-            alert(response.data.mes);
+        //     const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
+        //     alert(response.data.mes);
             onClose();
 
-            if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
+            // if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
                 updateVerify();
-            }
+            // }
         } catch (error) {
             alert(error.message);
         }
