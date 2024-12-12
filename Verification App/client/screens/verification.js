@@ -17,7 +17,7 @@ export default function Verification({ navigation }) {
   const [videoUploaded, setVideoUploaded] = useState(false)
   const [audioResponse, setAudioResponse] = useState([])
   const [faceResponse, setFaceResponse] = useState([])
-  const [finalResult, setFinalResult] = useState(null);
+  const [finalResult, setFinalResult] = useState(-1);
   const [facing, setFacing] = useState('back');
   const [submit, setSubmit] = useState(null);
   const [recordingDisabled, setRecordingDisabled] = useState(undefined);
@@ -77,7 +77,7 @@ export default function Verification({ navigation }) {
     if (startVerify) {
       const incrementSessions = async () => {
         try {
-          const res = await axios.post('https://verification-zeta.vercel.app/incrementSessions', currentUser)
+          const res = await axios.post('http://192.168.1.14:3001/incrementSessions', currentUser)
           setCurrentUser(pre => ({ ...pre, totalSessions: res.data.totalSessions }))
         } catch (error) {
           console.log(error.message);
@@ -117,7 +117,7 @@ export default function Verification({ navigation }) {
   }, [videoUri])
 
   useEffect(() => {
-    // videoUri && convertToWav()
+    videoUri && convertToWav()
   }, [videoUri])
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function Verification({ navigation }) {
     // Function to check the status of a task ID
     const checkTaskStatus = async (id) => {
       try {
-        const response = await axios.get(`http://202.142.147.3:5001/result/${id}`);
+        const response = await axios.get(`http://202.142.147.3:5005/result/${id}`);
         // const response = await axios.get(`https://5b72-121-52-151-227.ngrok-free.app/result/${id}`);
 
         if (response.data) {
@@ -171,15 +171,15 @@ export default function Verification({ navigation }) {
 
   const finalResultCalculation = () => {
     let result = 0;
-    console.log('face Response', faceResponse);
-    console.log('audio Response', audioResponse);
+    // console.log('face Response', faceResponse);
+    // console.log('audio Response', audioResponse);
 
 
     for (let index = 0; index < faceResponse.length; index++) {
       const face = faceResponse[index];
       const audio = audioResponse[index];
-      // console.log('face', index, face);
-      // console.log('audio', index, audio);
+      console.log('face', index, face);
+      console.log('audio', index, audio);
 
       if (audio && audio == currentUser.cnic) {
         result += 10
@@ -193,6 +193,9 @@ export default function Verification({ navigation }) {
     setQuestion('')
     setVideoUploaded(true)
     console.log('Total Result', result);
+    setAudioResponse([])
+    setFaceResponse([])
+    setTaskIds([])
 
   }
 
@@ -221,13 +224,14 @@ export default function Verification({ navigation }) {
     );
     setStartVerify(false);
     setSubmit(null);
+    setFinalResult(-1)
     navigation.navigate('Home')
   };
 
   useEffect(() => {
     if (finalResult >= 90) {
       showAlertWithAnimation(true);
-    } else if (finalResult < 90 && finalResult > 0) {
+    } else if (finalResult < 90 && finalResult >= 0) {
       showAlertWithAnimation(false);
     }
   }, [finalResult]);
@@ -312,7 +316,7 @@ export default function Verification({ navigation }) {
     formData.append('cnic', currentUser.cnic)
 
     try {
-      const response = await axios.post('https://verification-zeta.vercel.app/upload', formData, {
+      const response = await axios.post('http://192.168.1.14:3001/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -335,7 +339,7 @@ export default function Verification({ navigation }) {
       name: currentUser.cnic + '_' + `${index + 1}` + '_' + currentUser.totalSessions + '.mp4',
     });
     try {
-      let response = await axios.post('http://192.168.137.166:5001/convert', formData, {
+      let response = await axios.post('http://192.168.1.14:5002/convert', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -370,7 +374,7 @@ export default function Verification({ navigation }) {
     try {
       // console.log(videoUri);
       // Send the POST request
-      const response = await axios.post('http://202.142.147.3:5001/process',
+      const response = await axios.post('http://202.142.147.3:5005/process',
       // const response = await axios.post('https://5b72-121-52-151-227.ngrok-free.app/process',
         formData2,
         {
