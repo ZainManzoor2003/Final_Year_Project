@@ -3,37 +3,30 @@ from flask_cors import CORS
 import os
 from moviepy.editor import VideoFileClip
 import requests
-import json
-import cv2
-import os
-import random
-import os
 import zipfile
-
+import random
 
 app = Flask(__name__)
 CORS(app)
 
 # Define the paths for the upload and converted folders
+UPLOAD_AUDIOS = "/tmp/audios"
 UPLOAD_FOLDER = "/tmp/uploads"
 CONVERTED_FOLDER = "/tmp/converted"
-OUTPUT_FOLDER = "/tmp/screenshots"
 ZIP_FOLDER = "/tmp/zipped_screenshots"
 
 # Create directories if they don't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CONVERTED_FOLDER, exist_ok=True)
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(ZIP_FOLDER, exist_ok=True)
 
-
-# Flask API URL where the .wav file will be sent
-FLASK_API_URL = "https://6edc-202-142-147-154.ngrok-free.app/upload_wav"
-FLASK_API_URL2 = "https://fac3-111-68-102-25.ngrok-free.app/upload"
+# Flask API URL where the zip file will be sent
+FLASK_API_URL = "http://202.142.147.3:6001/upload_zip"
+FLASK_API_URL2 = "http://202.142.147.3:5003/uploaddd"
 
 
 @app.route("/convert", methods=["POST"])
-def convert_videos_to_audio():
+def convert_videos_to_audio_and_zip():
     # Check if the files are present in the request
     if "files" not in request.files:
         return jsonify(error="No files part"), 400
@@ -45,7 +38,7 @@ def convert_videos_to_audio():
         try:
             # Save the uploaded video file to the UPLOAD_FOLDER
             video_filename = file.filename
-            video_path = os.path.join(UPLOAD_FOLDER, video_filename)
+            video_path = os.path.join(UPLOAD_AUDIOS, video_filename)
             file.save(video_path)
 
             # Define the output audio file path in the CONVERTED_FOLDER
@@ -57,44 +50,49 @@ def convert_videos_to_audio():
             video.audio.write_audiofile(
                 output_path,
                 codec="pcm_s16le",  # PCM signed 16-bit little-endian
-                ffmpeg_params=[
-                    "-ac",
-                    "1",
-                    "-ar",
-                    "16000",
-                ],  # mono audio, 16 kHz sampling rate
+                ffmpeg_params=["-ac", "1", "-ar", "16000"],  # mono audio, 16 kHz
             )
             video.close()
-            # Clean up the video file if needed
-            # os.remove(video_path)
 
-            # Append the name and URI of the converted file to the list
-            converted_files.append({"name": output_filename, "uri": output_path})
-
-            # Automatically upload the .wav file to the Flask API
-            with open(output_path, "rb") as wav_file:
-                files = {"file": wav_file}
-                requests.post(FLASK_API_URL, files=files)
-                # print(response.content)
-                # # print('reponse',response.content)
-                # # Decode the response content to a UTF-8 string
-                # response_str = response.content.decode("utf-8")
-
-                # Parse the JSON
-                # response_json = json.loads(response_str)
-
-                # # Get the Urdu text from the 'text' key in the JSON
-                # urdu_text = response_json["text"]
-
-                # Print the decoded Urdu text
-                # print(urdu_text)
-                # # response.raise_for_status()
-                # print(f"Uploaded {output_filename} to API successfully.")
-                return jsonify({"message": "Uploaded Successfully For Training"})
+            # Append the name and path of the converted file to the list
+            converted_files.append(output_path)
 
         except Exception as e:
-            print(e)
-            return jsonify(error=str(e)), 500
+            print(f"Error processing file {file.filename}: {e}")
+            return (
+                jsonify(error=f"Error processing file {file.filename}: {str(e)}"),
+                500,
+            )
+
+    # Create a zip file containing all converted audio files
+    zip_filename = "converted_audios.zip"
+    zip_path = os.path.join(ZIP_FOLDER, zip_filename)
+    with zipfile.ZipFile(zip_path, "w") as zipf:
+        for audio_file in converted_files:
+            zipf.write(audio_file, os.path.basename(audio_file))
+
+    # Send the zip file to the Flask API
+    try:
+        with open(zip_path, "rb") as zip_file:
+            files = {"file": zip_file}
+            response = requests.post(FLASK_API_URL, files=files)
+            response.raise_for_status()  # Raise an error if the request failed
+    except Exception as e:
+        print(f"Error uploading zip file: {e}")
+        return jsonify(error=f"Error uploading zip file: {str(e)}"), 500
+
+    # Clean up: Remove uploaded videos and converted audios
+    for file_path in converted_files:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    for file in files:
+        video_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        if os.path.exists(video_path):
+            os.remove(video_path)
+
+    return jsonify(
+        {"message": "All files processed, zipped, and uploaded successfully"}
+    )
 
     # Return the names and URIs of all converted files
     # return jsonify({"id":response.content})
@@ -147,7 +145,7 @@ def extract_images_from_videos():
         video_file.save(video_path)
 
         # Extract images from the video
-        screenshots = extract_images_from_video(video_path, OUTPUT_FOLDER)
+        screenshots = extract_images_from_video(video_path, UPLOAD_FOLDER)
         all_screenshots.extend(screenshots)
 
     # Create a zip file of all the screenshots
