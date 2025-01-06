@@ -18,7 +18,7 @@ export default function Verification({ navigation }) {
   const [audioResponse, setAudioResponse] = useState([])
   const [faceResponse, setFaceResponse] = useState([])
   const [finalResult, setFinalResult] = useState(-1);
-  const [facing, setFacing] = useState('back');
+  const [facing, setFacing] = useState('front');
   const [submit, setSubmit] = useState(null);
   const [recordingDisabled, setRecordingDisabled] = useState(undefined);
   const [isRecording, setIsRecording] = useState(null);
@@ -46,7 +46,7 @@ export default function Verification({ navigation }) {
   useEffect(() => {
     if (videoUploaded) {
       setIndex(index + 1)
-      if (index == 4) {
+      if (index == 9) {
         setVideoUploaded(false)
         setCameraDisabled(true)
         setSubmit(true)
@@ -77,7 +77,7 @@ export default function Verification({ navigation }) {
     if (startVerify) {
       const incrementSessions = async () => {
         try {
-          const res = await axios.post('http://192.168.1.14:3001/incrementSessions', currentUser)
+          const res = await axios.post('http://192.168.100.92:3001/incrementSessions', currentUser)
           setCurrentUser(pre => ({ ...pre, totalSessions: res.data.totalSessions }))
         } catch (error) {
           console.log(error.message);
@@ -89,14 +89,14 @@ export default function Verification({ navigation }) {
 
   useEffect(() => {
     const changeQuestion = async () => {
-      if (randomQuestions.length > 0 && index <= 4 && startVerify) {
+      if (randomQuestions.length > 0 && index <= 9 && startVerify) {
         // setQuestion('انتظار فرمائیں')
         setRecordingDisabled(true)
         await playSound(randomQuestions[index].file)
         setQuestion(randomQuestions[index].text)
         setTimeout(() => {
           setRecordingDisabled(false)
-        }, 5000);
+        }, 3000);
         // setTimeout(() => {
         // setIsRecording(true)
         // setTimeout(() => {
@@ -127,7 +127,6 @@ export default function Verification({ navigation }) {
     const checkTaskStatus = async (id) => {
       try {
         const response = await axios.get(`http://202.142.147.3:5005/result/${id}`);
-        // const response = await axios.get(`https://5b72-121-52-151-227.ngrok-free.app/result/${id}`);
 
         if (response.data) {
           console.log('Response for ID:', id, response.data);
@@ -192,7 +191,7 @@ export default function Verification({ navigation }) {
     setFinalResult(result)
     setQuestion('')
     setVideoUploaded(true)
-    console.log('Total Result', result);
+    // console.log('Total Result', result);
     setAudioResponse([])
     setFaceResponse([])
     setTaskIds([])
@@ -229,9 +228,9 @@ export default function Verification({ navigation }) {
   };
 
   useEffect(() => {
-    if (finalResult >= 90) {
+    if (finalResult >= 50) {
       showAlertWithAnimation(true);
-    } else if (finalResult < 90 && finalResult >= 0) {
+    } else if (finalResult < 50 && finalResult >= 0) {
       showAlertWithAnimation(false);
     }
   }, [finalResult]);
@@ -274,20 +273,6 @@ export default function Verification({ navigation }) {
     if (cameraRef.current) {
       const video = await cameraRef.current.recordAsync();
       setVideoUri(video?.uri);
-      // console.log('video', video?.uri);
-      // setIsRecording(false)
-
-      // const destinationPath = `${FileSystem.documentDirectory}videos/recordedVideo.mp4`;
-
-      // await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}videos`, { intermediates: true });
-
-      // await FileSystem.moveAsync({
-      //   from: video.uri,
-      //   to: destinationPath,
-      // });
-
-      // Save the video to the gallery
-      // await MediaLibrary.saveToLibraryAsync(destinationPath);
 
 
 
@@ -301,7 +286,6 @@ export default function Verification({ navigation }) {
     if (cameraRef.current) {
       cameraRef.current.stopRecording();
     }
-    // index == 4 && setSubmit(true)
   }
 
   const saveVideo = async () => {
@@ -316,7 +300,7 @@ export default function Verification({ navigation }) {
     formData.append('cnic', currentUser.cnic)
 
     try {
-      const response = await axios.post('http://192.168.1.14:3001/upload', formData, {
+      const response = await axios.post('http://192.168.100.92:3001/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -324,22 +308,21 @@ export default function Verification({ navigation }) {
       console.log('Upload response', response.data);
 
     } catch (error) {
-      console.error('Upload error', error);
+      // console.error('Upload error', error);
     }
     setVideoUploaded(true)
 
   }
 
   const convertToWav = async () => {
-
     let formData = new FormData();
     formData.append('files', {
       uri: videoUri,
       type: 'video/mp4',
       name: currentUser.cnic + '_' + `${index + 1}` + '_' + currentUser.totalSessions + '.mp4',
-    });
+    });r
     try {
-      let response = await axios.post('http://192.168.1.14:5002/convert', formData, {
+      let response = await axios.post('https://9d5f-103-152-101-245.ngrok-free.app/convert', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -354,7 +337,7 @@ export default function Verification({ navigation }) {
       setAudioResponse(pre => [...pre, id])
       // Alert.alert('Files converted and saved successfully');
     } catch (error) {
-      // console.log('Error uploading mp4 file to convert it into wav', error.message);
+      console.log('Error uploading mp4 file to convert it into wav', error.message);
     }
 
   }
@@ -375,7 +358,6 @@ export default function Verification({ navigation }) {
       // console.log(videoUri);
       // Send the POST request
       const response = await axios.post('http://202.142.147.3:5005/process',
-      // const response = await axios.post('https://5b72-121-52-151-227.ngrok-free.app/process',
         formData2,
         {
           headers: {
@@ -389,7 +371,7 @@ export default function Verification({ navigation }) {
       setTaskIds((prevTaskIds) => [...prevTaskIds, response.data.task_id]);
 
     } catch (error) {
-      // console.error('Upload error mp4 file :', error);
+      console.error('Upload error mp4 file :', error);
     }
 
   }
@@ -408,7 +390,7 @@ export default function Verification({ navigation }) {
       <View style={styles.container}>
         {startVerify ?
           <>
-            <Text style={{ textAlign: 'center', fontSize: 30 }}>{question === 'انتظار فرمائیں' ? question + dots : question}</Text>
+            <Text style={{ textAlign: 'center', fontSize: 25, fontFamily: 'Noto Nastaliq Urdu' }}>{question === 'انتظار فرمائیں' ? question + dots : question}</Text>
             <GestureHandlerRootView
               style={{
                 flex: 1, display: cameraDisabled ? 'none' : 'flex'
@@ -492,8 +474,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: 'white',
+    fontFamily: 'Noto Nastaliq Urdu'
   },
   message: {
     textAlign: 'center'
