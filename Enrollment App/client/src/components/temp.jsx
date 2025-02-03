@@ -1,157 +1,13 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import {
-    Box,
-    IconButton, Button, TextField,
-    Card
-}
-    from '@mui/material'
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
-
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import Switch from '@mui/material/Switch';
-import CreateContextApi from '../../ContextApi/CreateContextApi';
+import React, { useEffect, useRef, useState, useContext, useCallback } from 'react';
 import './ManagePensioners.css'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FaEdit } from "react-icons/fa";
+import axios from 'axios';
+import CreateContextApi from '../../ContextApi/CreateContextApi';
 import Webcam from 'react-webcam';
 import RecordRTC from 'recordrtc'
-
-const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
-
-const UpdateModal = ({ show, onClose, pensioner }) => {
-
-    const [currentOperator, setCurrentOperator] = useState({});
-
-    useEffect(() => {
-        if (pensioner) {
-            setCurrentOperator({
-                _id: pensioner._id,
-                name: pensioner.name,
-                username: pensioner.username,
-                password: pensioner.password,
-                number: pensioner.number,
-                address: pensioner.address,
-                pensionBank: pensioner.pensionBank,
-                city: pensioner.city
-            });
-        }
-    }, [pensioner])
-
-    if (!show) return null;
-
-    const validateFields = () => {
-        const { name, username, password, number, address, pensionBank, city } = currentOperator;
-
-        if (!name || !username || !number || !address || !password || !pensionBank || !city) {
-            alert("Any Field is required.");
-            return false;
-        }
-
-        // Check if username only contains lowercase letters, underscores, and digits
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            alert("Username should contain only lowercase letters, underscores, and digits.");
-            return false;
-        }
-
-        // Check if password contains only allowed characters and no whitespace
-        if (!/^[a-z0-9@_]+$/.test(password)) {
-            alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
-            return false;
-        }
-
-        // Check if number contains only digits
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
-            return false;
-        }
-
-        return true;
-    };
-
-
-    const handleSubmit = async () => {
-        if (!validateFields()) return;
-        try {
-            await axios.post(`http://localhost:3001/updatePensioner`, currentOperator)
-                .then((res) => {
-                    alert(res.data.message);
-                    onClose()
-                })
-
-        } catch (error) {
-            alert(err.message)
-        }
-    };
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <span className="close-icon" onClick={onClose}>&times;</span>
-                <h2>Update Pensioner</h2>
-                <label>Name:</label>
-                <input
-                    type="text"
-                    value={currentOperator.name}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={10}
-                />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={currentOperator.username}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, username: e.target.value }))}
-                    maxLength={14}
-                />
-                <label>Password:</label>
-                <input
-                    type="password"
-                    value={currentOperator.password}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
-                    maxLength={13}
-                />
-                <label>City:</label>
-                <input
-                    type="text"
-                    value={currentOperator.city}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, city: e.target.value }))}
-                    maxLength={13}
-                />
-                <label>Pension Bank:</label>
-                <input
-                    type="text"
-                    value={currentOperator.pensionBank}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={13}
-                />
-                <label>Number:</label>
-                <input
-                    type="text"
-                    value={currentOperator.number}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
-                    maxLength={11}
-                />
-                <label>Address:</label>
-                <input
-                    type="text"
-                    value={currentOperator.address}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
-                />
-                <button onClick={handleSubmit}>Update</button>
-            </div>
-        </div>
-    );
-};
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CountDownTimer = ({ isRecording, seconds, setSeconds }) => {
     useEffect(() => {
@@ -439,6 +295,114 @@ const Verification = ({ show, onClose }) => {
     );
 }
 
+const UpdateModal = ({ show, onClose, pensioner }) => {
+
+    const [currentPensioner, setCurrentPensioner] = useState({});
+
+    useEffect(() => {
+        if (pensioner) {
+            console.log(pensioner);
+
+            setCurrentPensioner({
+                _id: pensioner._id,
+                name: pensioner.name, username: pensioner.username, password: pensioner.password,
+                number: pensioner.number, address: pensioner.address
+            });
+        }
+    }, [pensioner])
+
+    if (!show) return null;
+
+    const validateFields = () => {
+        const { name, username, password, number, address } = currentPensioner;
+
+        if (!name || !username || !number || !address || !password) {
+            alert("Any Field is required.");
+            return false;
+        }
+
+        // Check if username only contains lowercase letters, underscores, and digits
+        if (!/^[a-z0-9@_]+$/.test(username)) {
+            alert("Username should contain only lowercase letters, underscores, and digits.");
+            return false;
+        }
+
+        // Check if password contains only allowed characters and no whitespace
+        if (!/^[a-z0-9@_]+$/.test(password)) {
+            alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+            return false;
+        }
+
+        // Check if number contains only digits
+        if (!/^\d+$/.test(number)) {
+            alert("Number should contain only digits.");
+            return false;
+        }
+
+        return true;
+    };
+
+
+    const handleSubmit = async () => {
+        if (!validateFields()) return;
+        try {
+            await axios.post(`http://localhost:3001/updatePensioner`, currentPensioner)
+                .then((res) => {
+                    alert(res.data.message);
+                    onClose()
+                })
+
+        } catch (error) {
+            alert(err.message)
+        }
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <span className="close-icon" onClick={onClose}>&times;</span>
+                <h2>Update Pensioner</h2>
+                <label>Name:</label>
+                <input
+                    type="text"
+                    value={currentPensioner.name}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, name: e.target.value }))}
+                    maxLength={10}
+                />
+                <label>Username:</label>
+                <input
+                    type="text"
+                    value={currentPensioner.username}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, username: e.target.value }))}
+                    maxLength={14}
+                />
+                <label>Password:</label>
+                <input
+                    type="text"
+                    value={currentPensioner.password}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, password: e.target.value }))}
+                    maxLength={14}
+                />
+                <label>Number:</label>
+                <input
+                    type="text"
+                    value={currentPensioner.number}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, number: e.target.value }))}
+                    maxLength={11}
+                />
+                <label>Address:</label>
+                <input
+                    type="text"
+                    value={currentPensioner.address}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
+                    maxLength={35}
+                />
+                <button onClick={handleSubmit}>Update</button>
+            </div>
+        </div>
+    );
+};
+
 const AddModal = ({ show, onClose, updateVerify }) => {
     const { currentPensionerData, setCurrentPensionerData } = useContext(CreateContextApi);
 
@@ -481,9 +445,9 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
     // Validation function
     const validateFields = () => {
-        const { name, cnic, email, number, address, dob, pensionBank, city } = currentPensioner;
+        const { name, cnic, email, number, address, dob } = currentPensioner;
 
-        if (!name || !cnic || !email || !number || !address || !dob || !pensionBank || !city) {
+        if (!name || !cnic || !email || !number || !address || !dob) {
             alert("Any field is required.");
             return false;
         }
@@ -566,7 +530,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
                 <label>Password (auto-generated):</label>
                 <input
-                    type="password"
+                    type="text"
                     value={currentPensioner.password || ''}
                     readOnly
                 />
@@ -586,20 +550,6 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     maxLength={35}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
                 />
-                <label>City:</label>
-                <input
-                    type="text"
-                    value={currentPensioner.city || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
-                    maxLength={20}
-                />
-                <label>Pension Bank:</label>
-                <input
-                    type="text"
-                    value={currentPensioner.pensionBank || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={15}
-                />
 
                 <label>DOB:</label>
                 <input
@@ -616,29 +566,143 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
 
 
-export default function ManagePensioners() {
-    const [allPensioners, setAllPensioners] = useState([]);
-    const [tempAllPensioner, setTempAllPensioners] = useState([]);
-    const [filterText, setFilterText] = useState("")
-    const [page, setPage] = useState(0);  // Current page index
-    const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
+const UpdateAccountModal = ({ show, onClose, operatorInfo }) => {
+
+    const [operator, setOperator] = useState({});
+
+    useEffect(() => {
+        if (operatorInfo) {
+            setOperator({
+                _id: operatorInfo._id,
+                name: operatorInfo.name,
+                username: operatorInfo.username,
+                password: operatorInfo.password,
+                number: operatorInfo.number,
+                address: operatorInfo.address
+            });
+        }
+    }, [operatorInfo])
+
+    if (!show) return null;
+
+    const validateFields = () => {
+        const { name, username, password, number, address } = operatorInfo;
+
+        if (!name || !username || !number || !address || !password) {
+            alert("Any Field is required.");
+            return false;
+        }
+
+        // Check if username only contains lowercase letters, underscores, and digits
+        if (!/^[a-z0-9_]+$/.test(username)) {
+            alert("Username should contain only lowercase letters, underscores, and digits.");
+            return false;
+        }
+
+        // Check if password contains only allowed characters and no whitespace
+        if (!/^[a-z0-9@_]+$/.test(password)) {
+            alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+            return false;
+        }
+
+        // Check if number contains only digits
+        if (!/^\d+$/.test(number)) {
+            alert("Number should contain only digits.");
+            return false;
+        }
+
+        return true;
+    };
+
+
+    const handleSubmit = async () => {
+        if (!validateFields()) return;
+        try {
+            await axios.post(`http://localhost:3001/updateOperator`, operator)
+                .then((res) => {
+                    alert(res.data.message);
+                    onClose()
+                })
+
+        } catch (error) {
+            alert(err.message)
+        }
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <span className="close-icon" onClick={onClose}>&times;</span>
+                <h2>Update Account Info</h2>
+                <label>Name:</label>
+                <input
+                    type="text"
+                    value={operator.name}
+                    onChange={(e) => setOperator(prev => ({ ...prev, name: e.target.value }))}
+                    maxLength={10}
+                />
+                <label>Username:</label>
+                <input
+                    type="text"
+                    value={operator.username}
+                    onChange={(e) => setOperator(prev => ({ ...prev, username: e.target.value }))}
+                    maxLength={14}
+                />
+                <label>Password:</label>
+                <input
+                    type="text"
+                    value={operator.password}
+                    onChange={(e) => setOperator(prev => ({ ...prev, password: e.target.value }))}
+                    maxLength={14}
+                />
+                <label>Number:</label>
+                <input
+                    type="text"
+                    value={operator.number}
+                    onChange={(e) => setOperator(prev => ({ ...prev, number: e.target.value }))}
+                    maxLength={11}
+                />
+                <label>Address:</label>
+                <input
+                    type="text"
+                    value={operator.address}
+                    onChange={(e) => setOperator(prev => ({ ...prev, address: e.target.value }))}
+                    maxLength={35}
+                />
+                <button onClick={handleSubmit}>Update</button>
+            </div>
+        </div>
+    );
+};
+
+export default function Temp() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [isToggled, setIsToggled] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showAccountModal, setShowAccountModal] = useState(false);
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [allPensioners, setAllPensioners] = useState([]);
     const [pensioner, setPensioner] = useState();
     const [isOpen, setIsOpen] = useState(false);
-    const [showVerificationModal, setShowVerificationModal] = useState(false);
-    const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
+    const { operatorInfo, setOperatorInfo, currentPensionerData } = useContext(CreateContextApi)
 
     const getPensioners = async () => {
         let data = await fetch(`http://localhost:3001/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
-        setTempAllPensioners(res)
     }
+
+    const getAccountInfo = async () => {
+        let data = await fetch(`http://localhost:3001/getAccountInfo/${id}`);
+        let res = await data.json();
+        setOperatorInfo(res);
+    }
+
+    useEffect(() => {
+        getAccountInfo();
+    }, [])
 
     useEffect(() => {
         if (allPensioners.length === 0) {
@@ -647,25 +711,14 @@ export default function ManagePensioners() {
     }, [])
 
 
-
-    const enableDisablePensioner = async (pensioner) => {
-        try {
-            await axios.post('http://localhost:3001/enableDisablePensioner', pensioner)
-                .then((res) => {
-                    if (res.data.message === 'Successfull') {
-                        getPensioners()
-                    }
-                })
-        } catch (error) {
-            console.log(error.message);
-
-        }
-    }
+    const handleClick = () => {
+        setIsToggled(!isToggled);
+    };
     const handleUpdateClick = (pensioner) => {
         setShowUpdateModal(true);
         setPensioner({
             _id: pensioner._id, name: pensioner.name, username: pensioner.username, password: pensioner.password,
-            number: pensioner.number, address: pensioner.address, pensionBank: pensioner.pensionBank, city: pensioner.city
+            number: pensioner.number, address: pensioner.address
         })
     };
     const handleAddClick = () => {
@@ -675,146 +728,86 @@ export default function ManagePensioners() {
     const handleAccountClick = () => {
         setShowAccountModal(true)
     }
+
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     };
-
-
-    const handleFilterChange = (event) => {
-        setFilterText(event.target.value)
-        setPage(0)
-        if (event.target.value) {
-            setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.name.toLowerCase().includes(filterText.toLowerCase())
-            ))
-        }
-        else {
-            console.log('empty');
-
-            setTempAllPensioners(allPensioners)
-        }
-
-    }
-
-
-
-
-
-    // Handle page change
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    // Handle change in rows per page
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);  // Reset the table to the first page whenever rows per page changes
-    };
-
-
-
     return (
         <>
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="20%"
-                padding="2rem"
-                border="ActiveBorder"
-                fullWidth
-            >
-                <Card sx={{ width: '80%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
-                    <TableContainer>
-                        <Box display="flex" justifyContent="flex-start">
-                            <Button variant='contained' onClick={handleAddClick}>Add New pensioner</Button>
-                        </Box>
+            <>
+                <div className="my-orders">
+                    <div className="hamburger-container">
+                        <div className="hamburger" onClick={toggleMenu}>
+                            <div className={`bar ${isOpen ? 'open' : ''}`}></div>
+                            <div className={`bar ${isOpen ? 'open' : ''}`}></div>
+                            <div className={`bar ${isOpen ? 'open' : ''}`}></div>
+                        </div>
+                        {isOpen && (
+                            <div className="dropdown">
+                                <ul>
+                                    <li onClick={() => handleAccountClick()}>Account</li>
+                                    <li>Logout</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                    <div className="my_orders_form">
+                        <div className="top">
+                            <h2>Manage <span>Pensioners</span></h2>
+                            <button onClick={() => handleAddClick()}>Add Pensioner</button>
+                        </div>
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Number</th>
+                                <th>Address</th>
+                                <th>Edit</th>
+                            </tr>
+                            {allPensioners.map((pensioner, index) => (
+                                <tr key={index}>
+                                    <td>{pensioner.name}</td>
+                                    <td>{pensioner.username}</td>
+                                    <td>{pensioner.password}</td>
+                                    <td>{pensioner.number}</td>
+                                    <td>{pensioner.address}</td>
+                                    <td> <span style={{ fontSize: '20px', cursor: 'pointer' }} onClick={() => handleUpdateClick(pensioner)}><FaEdit /></span></td>
+                                </tr>
+                            ))}
 
-                        <Box display="flex" justifyContent="flex-end" >
-                            <TextField
-                                label="Search pensioner"
-                                variant="outlined"
-                                value={filterText}
-                                onChange={handleFilterChange}
-                            >
-
-                            </TextField>
-                        </Box>
-                        <hr></hr>
-                        <Table aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Username</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope='col'>City</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Pension Bank</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Number</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
-                                    <TableCell scope="col">Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {tempAllPensioner !== null ? tempAllPensioner.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pensioner, index) => (
-                                    <TableRow
-                                        key={pensioner.id}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell sx={{ fontSize: '1.1rem' }} scope="row">{page * rowsPerPage + index + 1}</TableCell>
-
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.name}</TableCell>
-
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.username}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.city}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.pensionBank}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.number}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.address}</TableCell>
-                                        <TableCell align='center'>
-                                            <IconButton color='secondary' onClick={() => handleUpdateClick(pensioner)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton color='secondary' onClick={() => enableDisablePensioner(pensioner)}>
-                                                <Switch {...label} defaultChecked={pensioner.enable == false ? false : true} />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                )) : (<TableRow><TableCell>Loading... </TableCell></TableRow>)}
-                            </TableBody>
-                        </Table>
-                        <TablePagination sx={{ fontSize: '1.1rem' }}
-                            component="div"
-                            count={allPensioners != null ? allPensioners.length : 0}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            rowsPerPage={rowsPerPage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            rowsPerPageOptions={[5, 10, 25]}  // Options for rows per page
-                        />
-                    </TableContainer>
-                    <hr></hr>
-                </Card>
-            </Box>
-            <AddModal
-                show={showAddModal}
-                updateVerify={() => setShowVerificationModal(true)}
-                onClose={() => { setShowAddModal(false); getPensioners() }}
-            // onUpdate={handleUpdate}
-            />
-            <UpdateModal
-                show={showUpdateModal}
-                onClose={() => { setShowUpdateModal(false); getPensioners() }}
-                pensioner={pensioner}
-            // onUpdate={handleUpdate}
-            />
-            <Verification
-                show={showVerificationModal}
-                onClose={() => { setShowVerificationModal(false); }}
-            // onUpdate={handleUpdate}
-            />
-            <ToastContainer />
+                        </table>
+                    </div>
+                </div>
+                <UpdateModal
+                    show={showUpdateModal}
+                    onClose={() => { setShowUpdateModal(false); getPensioners() }}
+                    pensioner={pensioner}
+                // onUpdate={handleUpdate}
+                />
+                <AddModal
+                    show={showAddModal}
+                    updateVerify={() => setShowVerificationModal(true)}
+                    onClose={() => { setShowAddModal(false); getPensioners() }}
+                // onUpdate={handleUpdate}
+                />
+                <UpdateAccountModal
+                    show={showAccountModal}
+                    onClose={() => { setShowAccountModal(false); getAccountInfo(); toggleMenu(); }}
+                    operatorInfo={operatorInfo}
+                // onUpdate={handleUpdate}
+                />
+                <Verification
+                    show={showVerificationModal}
+                    onClose={() => { setShowVerificationModal(false); }}
+                // onUpdate={handleUpdate}
+                />
+                <ToastContainer />
+            </>
         </>
     )
 }
+
 
 const styles = {
     container: {

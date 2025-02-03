@@ -55,6 +55,8 @@ router.post('/upload', upload.single('video'), connection.upload);
 
 router.post('/incrementSessions', connection.incrementSessions);
 
+router.post('/updateAccount', connection.updateAccount);
+
 router.post('/register', connection.register)
 
 

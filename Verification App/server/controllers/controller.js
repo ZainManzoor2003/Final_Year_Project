@@ -28,6 +28,7 @@ const login = async (req, res) => {
     let { cnic, password } = req.body
     try {
         const user = await PensionerModel.findOne({ cnic: cnic })
+
         if (user) {
             if (user.password == password) {
                 const tokenData = {
@@ -112,6 +113,31 @@ const register = async (req, res) => {
     }
 }
 
+const updateAccount = async (req, res) => {
+    const { _id, name, username, password, number, address } = req.body;
+    console.log(req.body);
 
 
-module.exports = { connection, isLoggedIn, login, register, upload, incrementSessions }
+    try {
+        const updatedPensioner = await PensionerModel.findByIdAndUpdate(
+            _id, // Find the pensioner by their ID
+            { name, username, password, number, address }, // Fields to update
+            { new: true } // Return the updated document
+        );
+        if (!updatedPensioner) {
+            return res.status(404).json({ mes: 'Pensioner not found' });
+        }
+
+        // Send back the updated pensioner's information
+        res.status(200).json({ mes: 'Account updated successfully', updatedPensioner });
+    } catch (err) {
+        console.log(err.message);
+
+    }
+}
+
+
+
+
+
+module.exports = { connection, isLoggedIn, login, register, upload, incrementSessions, updateAccount }

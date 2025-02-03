@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    name: String,
-    username:String,
-    cnic: String,
-    email:String,
-    password: String,
-    number:String,
-    address:String,
-    role:String,
-    dob:String,
-    enable:Boolean
+    name: { type: String, trim: true },
+    username: { type: String, trim: true },
+    cnic: { type: String, trim: true },
+    email: { type: String, trim: true },
+    password: { type: String, trim: true },
+    number: { type: String, trim: true },
+    address: { type: String, trim: true },
+    role: { type: String, trim: true },
+    dob: { type: String, trim: true },
+    enable: Boolean
 })
 
 const User = new mongoose.model('User', userSchema);

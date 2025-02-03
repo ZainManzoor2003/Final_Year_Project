@@ -22,8 +22,9 @@ const styles = StyleSheet.create({
     btn: {
         textAlign: 'center',
         color: 'white',
-        fontSize: 20,
+        fontSize: 17,
         fontWeight: '500',
+        fontFamily: 'Noto Nastaliq Urdu'
     }
 });
 

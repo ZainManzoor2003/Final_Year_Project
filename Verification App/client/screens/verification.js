@@ -8,6 +8,7 @@ import Footer from '../components/footer';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
+import questions2 from '../assets/questions2';
 
 export default function Verification({ navigation }) {
   const doubleTapRef = useRef(null);
@@ -31,7 +32,9 @@ export default function Verification({ navigation }) {
   const [dots, setDots] = useState('.')
   const [timer, setTimer] = useState('تصدیق کا عمل شروع کریں')
   const [index, setIndex] = useState(0);
-  const { getRandomNumbers, randomQuestions, playSound, startVerify, setStartVerify, currentUser, setCurrentUser } = useContext(CreateContextApi)
+  const { getRandomNumbers, randomQuestions, playSound, startVerify, setStartVerify, currentUser, setCurrentUser,
+    getRandomNumbersForFaces, getRandomNumbersForSpecificLine
+  } = useContext(CreateContextApi)
 
   useEffect(() => {
     if (timer != 'تصدیق کا عمل شروع کریں') {
@@ -70,6 +73,8 @@ export default function Verification({ navigation }) {
   }, [videoUploaded, dots])
 
   useEffect(() => {
+    getRandomNumbersForFaces();
+    getRandomNumbersForSpecificLine();
     getRandomNumbers();
   }, [])
 
@@ -112,7 +117,7 @@ export default function Verification({ navigation }) {
     videoUri && saveVideo()
   }, [videoUri])
   useEffect(() => {
-    videoUri && faceRecognize();
+    // videoUri && faceRecognize();
 
   }, [videoUri])
 
@@ -176,9 +181,9 @@ export default function Verification({ navigation }) {
 
     for (let index = 0; index < faceResponse.length; index++) {
       const face = faceResponse[index];
-      const audio = audioResponse[index];
-      console.log('face', index, face);
-      console.log('audio', index, audio);
+      const audio = audioResponse[index].id;
+      // console.log('face', index, face);
+      // console.log('audio', index, audio);
 
       if (audio && audio == currentUser.cnic) {
         result += 10
@@ -202,7 +207,9 @@ export default function Verification({ navigation }) {
     // console.log('Audio Response', audioResponse);
     // console.log('Face Response', faceResponse);
 
-    if (faceResponse.length == 5 && audioResponse.length == 5) {
+    if (faceResponse.length == 10 && audioResponse.length == 10) {
+      console.log('audioResponses',audioResponse);
+      
       finalResultCalculation()
 
     }
@@ -315,26 +322,28 @@ export default function Verification({ navigation }) {
   }
 
   const convertToWav = async () => {
+
     let formData = new FormData();
     formData.append('files', {
       uri: videoUri,
       type: 'video/mp4',
       name: currentUser.cnic + '_' + `${index + 1}` + '_' + currentUser.totalSessions + '.mp4',
-    });r
+    });
     try {
-      let response = await axios.post('https://9d5f-103-152-101-245.ngrok-free.app/convert', formData, {
+      // let response = await axios.post('https://4101-103-152-101-246.ngrok-free.app/convert', formData, {
+      let response = await axios.post('http://192.168.100.92:5000/convert', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         responseType: 'json'
       });
 
-      const { id } = response.data;
+      const { id, text } = response.data;
 
       // converted_files.forEach(file => {
       //   console.log(`Converted file: ${file.name}, URI: ${file.uri}`);
       // });
-      setAudioResponse(pre => [...pre, id])
+      setAudioResponse(pre => [...pre, id, text])
       // Alert.alert('Files converted and saved successfully');
     } catch (error) {
       console.log('Error uploading mp4 file to convert it into wav', error.message);
@@ -352,7 +361,12 @@ export default function Verification({ navigation }) {
       uri: videoUri, // Ensure the file URI is correct and accessible
       name: 'video.mp4', // The file name
       type: 'video/mp4', // The file type
+      value: index == 0 || index == 1 ? randomQuestions[index].value : '-1'
     });
+    // for (let [key, value] of formData2.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
+
 
     try {
       // console.log(videoUri);
@@ -430,14 +444,19 @@ export default function Verification({ navigation }) {
               <Button text={'Submit'} clickEvent={handleSubmit} />
             } */}
             {!isRecording && !submit &&
-              <Button text={'تصدیق کا عمل ختم کریں'} clickEvent={() => {
-                setStartVerify(false);
-                // setWaitingForFaceResponse(''); setWaitingForAudioResponse('')
-              }} />
+              <TouchableOpacity style={styles.loginButton} onPress={() => { setStartVerify(false); }}>
+                <Text style={styles.loginButtonText}>تصدیق کا عمل ختم کریں</Text>
+              </TouchableOpacity>
+              // <Button text={'تصدیق کا عمل ختم کریں'} clickEvent={() => {
+              //   setStartVerify(false);
+              //   // setWaitingForFaceResponse(''); setWaitingForAudioResponse('')
+              // }} />
 
             }
           </>
-          : <Button text={timer} clickEvent={() => { setTimer(3); setIndex(0); }} />
+          : <TouchableOpacity style={styles.loginButton} onPress={() => { setTimer(3), setIndex(0) }}>
+            <Text style={styles.loginButtonText} >{timer}</Text>
+          </TouchableOpacity>
         }
       </View >
       {!startVerify && <Footer />}
@@ -450,7 +469,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     gap: 10,
-    margin: 20
+    padding: 20,
+    backgroundColor: 'white'
   },
   camera: {
     flex: 1,
@@ -484,4 +504,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 3,
   },
+  loginButton: {
+    backgroundColor: "#3662AA",
+    padding: 14,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  }
 });

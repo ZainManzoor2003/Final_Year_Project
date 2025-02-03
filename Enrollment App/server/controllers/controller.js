@@ -83,13 +83,16 @@ const upload = async (req, res) => {
 
 const addPensioner = async (req, res) => {
     try {
-        let { name, username, number, cnic, email, password, address, enable } = req.body; // Extract email and password from request body
-        cnic = cnic.replace(/\s+/g, '');
-        email = email.replace(/\s+/g, '');
-        password = password.replace(/\s+/g, '');
-        name = name.replace(/\s+/g, '');
-        username = username.replace(/\s+/g, '');
-        number = number.replace(/\s+/g, '');
+        let { name, username, number, cnic, email, password, address, enable, pensionBank, city } = req.body; // Extract email and password from request body
+        // cnic = cnic.replace(/\s+/g, '');
+        // email = email.replace(/\s+/g, '');
+        // password = password.replace(/\s+/g, '');
+        // name = name.replace(/\s+/g, '');
+        // username = username.replace(/\s+/g, '');
+        // number = number.replace(/\s+/g, '');
+        // pensionBank = number.replace(/\s+/g, '');
+        // city = number.replace(/\s+/g, '');
+
 
         const pensioner = await PensionerModel.findOne({ cnic });
 
@@ -98,7 +101,10 @@ const addPensioner = async (req, res) => {
             res.send({ mes: 'Pensioner Already Registered' });
         } else {
             // Save the new pensioner
-            const newPensioner = await PensionerModel({ name, username, number, cnic, email, password, address, enable }).save();
+            const newPensioner = await PensionerModel({
+                name, username, number, cnic, email, password, address,
+                pensionBank, city, enable
+            }).save();
 
             if (newPensioner) {
                 // Set up the email transporter
@@ -131,13 +137,13 @@ const addPensioner = async (req, res) => {
 };
 const addOperator = async (req, res) => {
     try {
-        let { name, username, number, cnic, email, password, address, enable,role } = req.body; // Extract email and password from request body
-        cnic = cnic.replace(/\s+/g, '');
-        email = email.replace(/\s+/g, '');
-        password = password.replace(/\s+/g, '');
-        name = name.replace(/\s+/g, '');
-        username = username.replace(/\s+/g, '');
-        number = number.replace(/\s+/g, '');
+        let { name, username, number, cnic, email, password, address, enable, role } = req.body; // Extract email and password from request body
+        // cnic = cnic.replace(/\s+/g, '');
+        // email = email.replace(/\s+/g, '');
+        // password = password.replace(/\s+/g, '');
+        // name = name.replace(/\s+/g, '');
+        // username = username.replace(/\s+/g, '');
+        // number = number.replace(/\s+/g, '');
 
         const pensioner = await UserModel.findOne({ cnic });
 
@@ -146,7 +152,7 @@ const addOperator = async (req, res) => {
             res.send({ mes: 'Operator Already Registered' });
         } else {
             // Save the new pensioner
-            const newOperator = await UserModel({ name, username, number, cnic, email, password, address, enable,role }).save();
+            const newOperator = await UserModel({ name, username, number, cnic, email, password, address, enable, role }).save();
 
             if (newOperator) {
                 // Set up the email transporter
@@ -221,10 +227,10 @@ const getAccountInfo = async (req, res) => {
 
 const updateOperator = async (req, res) => {
     let { name, username, number, password, address } = req.body;
-    password = password.replace(/\s+/g, '');
-    name = name.replace(/\s+/g, '');
-    username = username.replace(/\s+/g, '');
-    number = number.replace(/\s+/g, '');
+    // password = password.replace(/\s+/g, '');
+    // name = name.replace(/\s+/g, '');
+    // username = username.replace(/\s+/g, '');
+    // number = number.replace(/\s+/g, '');
 
     try {
         const user = await UserModel.updateOne({ _id: req.body._id }, { name, username, number, password, address })
@@ -242,13 +248,18 @@ const updateOperator = async (req, res) => {
 
 const updatePensioner = async (req, res) => {
     try {
-        let { name, username, number, password, address } = req.body;
-        password = password.replace(/\s+/g, '');
-        name = name.replace(/\s+/g, '');
-        username = username.replace(/\s+/g, '');
-        number = number.replace(/\s+/g, '');
-    
-        const pensioner = await PensionerModel.updateOne({ _id: req.body._id }, {name, username, number, password, address })
+        let { name, username, number, password, address, pensionBank, city } = req.body;
+        // password = password.replace(/\s+/g, '');
+        // name = name.replace(/\s+/g, '');
+        // username = username.replace(/\s+/g, '');
+        // number = number.replace(/\s+/g, '');
+        // pensionBank = number.replace(/\s+/g, '');
+        // city = number.replace(/\s+/g, '');
+
+        const pensioner = await PensionerModel.updateOne({ _id: req.body._id }, {
+            name, username, number, password,
+            address, pensionBank, city
+        })
         if (pensioner) {
             // console.log(user);
             res.send({ message: "Account Updated Successfully" })

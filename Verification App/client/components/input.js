@@ -17,13 +17,14 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 15,
         fontWeight: '500',
-        textAlign: 'right'
+        textAlign: 'right',
+        fontFamily: 'Noto Nastaliq Urdu',
+        marginBottom:10
     },
     input: {
         height: 40,
         backgroundColor: 'white',
         borderRadius: 10,
-        marginTop: 10,
         marginBottom: 20,
         padding: 10,
         textAlign: 'right'

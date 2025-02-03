@@ -3,10 +3,10 @@ import { View, Image, StyleSheet } from 'react-native';
 
 const Animation = () => {
     return (
-       <View style={styles.container}>
+        <View style={styles.container}>
             <Image
                 style={styles.image}
-                source={require('../assets/videos/scanning.gif')}
+                source={require('../assets/splash.png')}
             />
         </View>
     );
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor:'white'
+        backgroundColor: 'white'
     },
     image: {
         width: '80%',

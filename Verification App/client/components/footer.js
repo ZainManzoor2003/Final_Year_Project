@@ -3,27 +3,28 @@ import React, { useContext } from 'react'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import CreateContextApi from '../ContextApi/CreateContextApi'
+import { Feather } from "@expo/vector-icons";
 
 export default function Footer() {
     const navigation = useNavigation()
     const route = useRoute();
-    const {startVerify}=useContext(CreateContextApi);
+    const { startVerify } = useContext(CreateContextApi);
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('Home')}>
-                <FontAwesome5 name='home' style={styles.icon} color={route.name == 'Home' && 'orange'} />
+                <Feather name="home" style={styles.icon} color={route.name == 'Home' ? 'orange' :'white'} />
                 <Text style={styles.text} >گھر</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('Verification')}>
-                <FontAwesome5 name='check-double' style={styles.icon} color={route.name == 'Verification' && 'orange'} />
+                <Feather name="check-square" style={styles.icon} color={route.name == 'Verification' ? 'orange' :'white'} />
                 <Text style={styles.text}> تصدیق کریں</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('About')}>
-                <FontAwesome5 name='info-circle' style={styles.icon} color={route.name == 'About' && 'orange'} />
+            {/* <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('About')}>
+                <Feather name="info" style={styles.icon} color={route.name == 'About' ? 'orange' :'white'} />
                 <Text style={styles.text}>اباؤٹ</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('Account')}>
-                <FontAwesome5 name='user' style={styles.icon} color={route.name == 'Account' && 'orange'} />
+                <Feather name="user" style={styles.icon} color={route.name == 'Account' ? 'orange' :'white'} />
                 <Text style={styles.text}>اکاؤنٹ</Text>
             </TouchableOpacity>
         </View>
@@ -32,24 +33,31 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
         flexDirection: 'row-reverse',
         justifyContent: 'space-between',
         // borderTopWidth:2,
-        borderColor: 'black',
+        // borderRadius: 10,
         paddingTop: 10,
         paddingBottom: 10,
-        backgroundColor: 'white'
+        backgroundColor:'#3662AA',
+        alignSelf: 'center',
+        // marginBottom: 10,
+        // marginTop:10,
     },
     btn: {
         marginHorizontal: 15,
+        alignItems: 'center'
     },
     icon: {
-        fontSize: 18,
+        fontSize: 22,
         alignSelf: 'center',
         marginBottom: 3,
+        // color: "#7C808D",
     },
     text: {
-        color: 'black',
-        fontSize: 12,
+        color: 'white',
+        fontSize: 10,
+        fontFamily: 'Noto Nastaliq Urdu',
     }
 })

@@ -8,6 +8,7 @@ import About from './screens/about';
 import Verification from './screens/verification';
 import Account from './screens/account';
 import CreateContextApi from './ContextApi/CreateContextApi';
+import Hello from './screens/hello';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,22 +20,34 @@ export default function Start() {
             <Stack.Navigator initialRouteName='Login'>
                 <Stack.Screen
                     name="Login"
-                    component={Login}
+                    component={Hello}
                     options={{ headerShown: false }}
                 />
                 <Stack.Screen
                     name="Home"
                     component={Home}
                     options={{
-                        title: '👋 Welcome ' + name,
-                        headerBackVisible: false
+                        headerTitle: () => (
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                            </Text>
+                        ),
+                        headerBackVisible: false,
+                        headerStyle: {
+                            // backgroundColor: "#3662AA", // Header background color
+                        },
                     }}
+
                 />
                 <Stack.Screen
                     name="Verification"
                     component={Verification}
                     options={{
-                        title: '👋 Welcome ' + name,
+                        headerTitle: () => (
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                            </Text>
+                        ),
                         headerBackVisible: false
                     }}
                 />
@@ -42,7 +55,11 @@ export default function Start() {
                     name="About"
                     component={About}
                     options={{
-                        title: '👋 Welcome ' + name,
+                        headerTitle: () => (
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                            </Text>
+                        ),
                         headerBackVisible: false
                     }}
                 />
@@ -50,7 +67,11 @@ export default function Start() {
                     name="Account"
                     component={Account}
                     options={{
-                        title: '👋 Welcome ' + name,
+                        headerTitle: () => (
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                            </Text>
+                        ),
                         headerBackVisible: false
                     }}
                 />

@@ -27,7 +27,7 @@
 .login-form {
     width: 30vw;
     padding: 40px 20px;
-    border: 2px solid rgb(255, 193, 7);
+    border: 2px solid #1976d2;
     background-color: #13131a;
     display: flex;
     flex-direction: column;
@@ -59,14 +59,14 @@
 }
 
 .login-form h2 span {
-    color: rgb(255, 193, 7);
+    color:#1976d2;
 }
 .login-form .email,.password{
     display: flex;
     margin-top: 20px;
-    border: 2px solid rgb(255, 193, 7);
+    border: 2px solid #1976d2;
     width: 90%;
-    background-color: #13131ad3;
+    /* background-color: white; */
     height: auto;
     border-radius: 5px;
 }
@@ -90,7 +90,7 @@
 }
 
 .login-form .submit-btn {
-    background-color: rgb(255, 193, 7);
+    background-color: #1976d2;
     border: none;
     color: white;
     width: 90%;
@@ -109,7 +109,7 @@
 }
 
 .login-form .submit-btn:disabled{
-    background-color: rgba(255, 193, 7,0.8);   
+    background-color: #034281;   
 }
 .login-form p{
     font-size: 15px;
