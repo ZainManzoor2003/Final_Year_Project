@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import questions from '../assets/questions'
 
 export default function ContextApiStates(props) {
-  const [currentPensionerData,setCurrentPensionerData]=useState({});
+  const [currentPensionerData, setCurrentPensionerData] = useState({});
   const [audio, setAudio] = useState(null);
   const [adminInfo, setAdminInfo] = useState({})
   const [operatorInfo, setOperatorInfo] = useState({})
@@ -32,29 +32,33 @@ export default function ContextApiStates(props) {
     return Array.from(randomNumbers);
   }
   const getRandomNumbers = () => {
-    const min = 1; // Minimum value (inclusive)
-    const max = questions.length - 1; // Maximum value (exclusive)
+    // const min = 1; // Minimum value (inclusive)
+    // const max = questions.length - 1; // Maximum value (exclusive)
 
-    const newNumbers = generateUniqueRandomNumbers(min, max, previousNumbers);
-    setPreviousNumbers(new Set([...previousNumbers, ...newNumbers]));
-    setPreviousNumbers(new Set())
-    setRandomQuestions([]);
-    setQuestions(newNumbers)
+    // const newNumbers = generateUniqueRandomNumbers(min, max, previousNumbers);
+    // setPreviousNumbers(new Set([...previousNumbers, ...newNumbers]));
+    // setPreviousNumbers(new Set())
+    // setRandomQuestions([]);
+    // setQuestions(newNumbers)
   }
-  const setQuestions = (newNumbers) => {
-    newNumbers.map(number => {
-      setRandomQuestions((pre) => [...pre,
-      {
-        text: questions[number].text,
-        file: questions[number].file
-      }])
-    })
-    console.log(newNumbers);
-
-  }
-  // useEffect(() => {
-  //     console.log(randomNumbers);
-  // }, [randomNumbers])
+  const setQuestions = () => {
+    setRandomQuestions(() => {
+      // Create a new array with exactly 6 elements (5 from questions[0], 1 from questions[1])
+      return [
+        ...Array(5).fill({
+          text: questions[0].text,
+          file: questions[0].file
+        }),
+        {
+          text: questions[1].text,
+          file: questions[1].file
+        }
+      ];
+    });
+  };
+  useEffect(() => {
+    console.log(randomQuestions);
+  }, [randomQuestions])
   const playSound = (file) => {
     if (audio) {
       // Stop any currently playing audio before starting a new one
@@ -83,9 +87,9 @@ export default function ContextApiStates(props) {
   return (
     <>
       <CreateContextApi.Provider value={{
-        currentPensionerData,setCurrentPensionerData,
+        currentPensionerData, setCurrentPensionerData,
         adminInfo, setAdminInfo, operatorInfo, setOperatorInfo
-        , playSound, getRandomNumbers, randomQuestions, startVerify, setStartVerify,
+        , playSound, randomQuestions, startVerify, setStartVerify, setQuestions
       }}>
         {props.children}
       </CreateContextApi.Provider>

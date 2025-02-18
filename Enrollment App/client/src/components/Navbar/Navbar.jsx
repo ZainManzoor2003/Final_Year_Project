@@ -29,7 +29,6 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
             setAdmin({
                 _id: adminInfo._id,
                 name: adminInfo.name,
-                username: adminInfo.username,
                 password: adminInfo.password,
                 number: adminInfo.number,
                 address: adminInfo.address
@@ -40,16 +39,10 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     if (!show) return null;
 
     const validateFields = () => {
-        const { name, username, password, number, address } = adminInfo;
+        const { name, password, number, address } = adminInfo;
 
-        if (!name || !username || !number || !address || !password) {
+        if (!name || !number || !address || !password) {
             alert("Any Field is required.");
-            return false;
-        }
-
-        // Check if username only contains lowercase letters, underscores, and digits
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            alert("Username should contain only lowercase letters, underscores, and digits.");
             return false;
         }
 
@@ -95,16 +88,9 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
                     onChange={(e) => setAdmin(prev => ({ ...prev, name: e.target.value }))}
                     maxLength={10}
                 />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={admin.username}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, username: e.target.value }))}
-                    maxLength={14}
-                />
                 <label>Password:</label>
                 <input
-                    type="text"
+                    type="password"
                     value={admin.password}
                     onChange={(e) => setAdmin(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}

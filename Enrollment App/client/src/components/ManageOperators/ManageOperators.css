@@ -168,7 +168,7 @@ tr:nth-child(even) {
 .modal-content {
   background: white;
   width: 30vw;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 20px;
   box-sizing: border-box;
   position: relative;

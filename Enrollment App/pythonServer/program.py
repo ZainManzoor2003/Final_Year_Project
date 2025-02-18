@@ -99,7 +99,7 @@ def convert_videos_to_audio_and_zip():
     # return jsonify({"id":response.content})
 
 
-def extract_images_from_video(video_path, output_folder, num_images=4):
+def extract_images_from_video(video_path, output_folder, num_images=40):
     """Extracts `num_images` screenshots from the video at random intervals."""
     video = VideoFileClip(video_path)
     duration = video.duration

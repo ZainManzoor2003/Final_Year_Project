@@ -11,18 +11,17 @@ import questions3 from '../assets/questions3';
 export default function ContextApiStates(props) {
     const [currentUser, setCurrentUser] = useState({
         _id: '',
-        name: '',
-        username: '',
+        urduName: '',
         password: '',
         cnic: '',
         number: '',
         address: '',
-        pensionBank: '',
-        city: '',
+        urduPensionBank: '',
+        urduCity: '',
         age: 'اٹھارہ',
         totalSessions: 0
     });
-    const questions = getQuestions(currentUser.name, currentUser.age, currentUser.city, currentUser.cnic,currentUser.pensionBank);
+    const questions = getQuestions(currentUser.urduName, currentUser.age, currentUser.urduCity, currentUser.cnic, currentUser.urduPensionBank);
     const [ipAddress, setIpAddress] = useState('');
     const [sound, setSound] = useState();
     const [startVerify, setStartVerify] = useState(false);
@@ -78,7 +77,7 @@ export default function ContextApiStates(props) {
             {
                 text: questions2[number].text,
                 file: questions2[number].file,
-                value: questions[number].file
+                value: questions2[number].value
             }])
         })
     }

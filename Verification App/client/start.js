@@ -14,7 +14,6 @@ const Stack = createNativeStackNavigator();
 
 export default function Start() {
     const { currentUser } = useContext(CreateContextApi)
-    let name = currentUser.name.charAt(0).toUpperCase() + currentUser.name.slice(1);
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName='Login'>
@@ -29,7 +28,7 @@ export default function Start() {
                     options={{
                         headerTitle: () => (
                             <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
-                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {currentUser.urduName}
                             </Text>
                         ),
                         headerBackVisible: false,
@@ -45,7 +44,7 @@ export default function Start() {
                     options={{
                         headerTitle: () => (
                             <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
-                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {currentUser.urduName}
                             </Text>
                         ),
                         headerBackVisible: false
@@ -57,7 +56,7 @@ export default function Start() {
                     options={{
                         headerTitle: () => (
                             <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
-                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {currentUser.urduName}
                             </Text>
                         ),
                         headerBackVisible: false
@@ -69,7 +68,7 @@ export default function Start() {
                     options={{
                         headerTitle: () => (
                             <Text style={{ fontWeight: 'bold', fontSize: 20, textAlign: 'right' }}>
-                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {name}
+                                👋 <Text style={{ fontWeight: 'bold' }}>خوش آمدید</Text> {currentUser.urduName}
                             </Text>
                         ),
                         headerBackVisible: false

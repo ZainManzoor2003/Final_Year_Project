@@ -12,9 +12,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import EmergencyRecordingIcon from '@mui/icons-material/EmergencyRecording';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Switch from '@mui/material/Switch';
@@ -37,12 +39,15 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             setCurrentOperator({
                 _id: pensioner._id,
                 name: pensioner.name,
-                username: pensioner.username,
+                urduName: pensioner.urduName,
                 password: pensioner.password,
                 number: pensioner.number,
                 address: pensioner.address,
                 pensionBank: pensioner.pensionBank,
-                city: pensioner.city
+                city: pensioner.city,
+                urduPensionBank: pensioner.urduPensionBank,
+                urduCity: pensioner.urduCity,
+
             });
         }
     }, [pensioner])
@@ -50,17 +55,25 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
     if (!show) return null;
 
     const validateFields = () => {
-        const { name, username, password, number, address, pensionBank, city } = currentOperator;
+        const { name, password, number, address, pensionBank, city, urduName, urduCity, urduPensionBank } = currentOperator;
+        const urduRegex = /^[\u0600-\u06FF\u0750-\u077F\s]+$/;
 
-        if (!name || !username || !number || !address || !password || !pensionBank || !city) {
+        if (!name || !number || !address || !password || !pensionBank || !city || !urduName
+            || !urduPensionBank || !urduCity) {
             alert("Any Field is required.");
             return false;
         }
-
-        // Check if username only contains lowercase letters, underscores, and digits
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            alert("Username should contain only lowercase letters, underscores, and digits.");
-            return false;
+        if (!urduRegex.test(urduCity)) {
+            alert('شہر must be in urdu')
+            return false
+        }
+        if (!urduRegex.test(urduPensionBank)) {
+            alert('پنشن بینک must be in urdu')
+            return false
+        }
+        if (!urduRegex.test(urduName)) {
+            alert('نام must be in urdu')
+            return false
         }
 
         // Check if password contains only allowed characters and no whitespace
@@ -88,7 +101,7 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
                     onClose()
                 })
 
-        } catch (error) {
+        } catch (err) {
             alert(err.message)
         }
     };
@@ -103,7 +116,15 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
                     type="text"
                     value={currentOperator.name}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={10}
+                    maxLength={15}
+                />
+                <label className='urduLabel'>:نام</label>
+                <input
+                    type="text"
+                    value={currentOperator.urduName || ''}
+                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduName: e.target.value })) }}
+                    maxLength={15}
+                    className='urduInput'
                 />
                 <label>Username:</label>
                 <input
@@ -126,12 +147,28 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, city: e.target.value }))}
                     maxLength={13}
                 />
+                <label className='urduLabel'>:شہر</label>
+                <input
+                    type="text"
+                    value={currentOperator.urduCity || ''}
+                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduCity: e.target.value })) }}
+                    maxLength={20}
+                    className='urduInput'
+                />
                 <label>Pension Bank:</label>
                 <input
                     type="text"
                     value={currentOperator.pensionBank}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={13}
+                    maxLength={20}
+                />
+                <label className='urduLabel'>:پنشن بینک</label>
+                <input
+                    type="text"
+                    value={currentOperator.urduPensionBank || ''}
+                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduPensionBank: e.target.value })) }}
+                    maxLength={20}
+                    className='urduInput'
                 />
                 <label>Number:</label>
                 <input
@@ -190,7 +227,7 @@ const Verification = ({ show, onClose }) => {
     const [timer, setTimer] = useState('ریکارڈنگ کا عمل شروع کریں');
     const [index, setIndex] = useState(0);
     const [seconds, setSeconds] = useState(0);
-    const { getRandomNumbers, randomQuestions, playSound, startVerify, setStartVerify,
+    const { setQuestions, randomQuestions, playSound, startVerify, setStartVerify,
         currentPensionerData } = useContext(CreateContextApi);
 
 
@@ -211,11 +248,9 @@ const Verification = ({ show, onClose }) => {
     useEffect(() => {
         const takeScreenshots = async () => {
             const formData = new FormData();
+            const lastIndex = videoFiles.length - 1;
 
-            // Append each video blob to FormData
-            videoFiles.forEach((blob, index) => {
-                formData.append('videos', blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
-            });
+            formData.append('videos', videoFiles[lastIndex], `${currentPensionerData.cnic}_${lastIndex + 1}.mp4`);
 
             try {
                 const response = await axios.post('http://localhost:5001/extract_images', formData, {
@@ -228,14 +263,14 @@ const Verification = ({ show, onClose }) => {
                 console.error('Error uploading videos:', error);
             }
         }
-        videoFiles.length == 2 && takeScreenshots()
+        videoFiles.length == 6 && takeScreenshots()
 
     }, [videoFiles])
     useEffect(() => {
 
         if (videoUploaded) {
             setIndex(index + 1);
-            if (index === 10) {
+            if (index === 5) {
                 setVideoUploaded(false);
                 toast.success(`Penioner Enrolled Successfully`, {
                     position: 'top-center',
@@ -256,28 +291,24 @@ const Verification = ({ show, onClose }) => {
     }, []);
 
     useEffect(() => {
-        getRandomNumbers();
+        setQuestions()
     }, []);
 
     useEffect(() => {
         const changeQuestion = async () => {
             // console.log('change question', index);
 
-            if (randomQuestions.length > 0 && index <= 10 && startVerify) {
+            if (randomQuestions.length > 0 && index <= 5 && startVerify) {
                 setRecordingDisabled(true);
                 await playSound(randomQuestions[index].file);
                 setQuestion(randomQuestions[index].text);
                 setTimeout(() => {
                     setRecordingDisabled(false);
-                }, 4000);
+                }, 3000);
             }
         };
         changeQuestion();
     }, [index, startVerify]);
-    useEffect(() => {
-        console.log(videoUrl);
-
-    }, [videoUrl])
 
     const handleDataAvailable = useCallback(({ data }) => {
         {
@@ -381,7 +412,7 @@ const Verification = ({ show, onClose }) => {
                 Alert.alert('Error uploading mp4 file to convert it into wav', error.message);
             }
         }
-        videoFiles.length == 2 && convertToWav()
+        videoFiles.length == 5 && convertToWav()
     }, [videoFiles])
 
 
@@ -421,7 +452,7 @@ const Verification = ({ show, onClose }) => {
                                     <>
                                         {/* {isPaused ? <button style={styles.button} onClick={handleResume}>Resume Recording</button>
                                             : <button style={styles.button} onClick={handlePause}>Pause Recording</button>} */}
-                                        <button disabled={seconds <= 5} style={styles.button} onClick={handleStopCaptureClick}>
+                                        <button disabled={seconds <= 2} style={styles.button} onClick={handleStopCaptureClick}>
                                             Stop Recording
                                         </button>
                                     </>
@@ -465,27 +496,32 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
 
 
-    const generateUsername = (name) => {
-        if (!name) return "";
-
-        const randomDigits = Math.floor(Math.random() * 900) + 100;
-        const username = `${name.toLowerCase()}_${randomDigits}`;
-        setCurrentPensioner(prev => ({ ...prev, username }));
-    };
-
     const handleNameChange = (e) => {
         const name = e.target.value;
         setCurrentPensioner(prev => ({ ...prev, name }));
-        generateUsername(name);
     };
 
     // Validation function
     const validateFields = () => {
-        const { name, cnic, email, number, address, dob, pensionBank, city } = currentPensioner;
+        const { name, cnic, email, number, address, dob, pensionBank, city, urduName, urduCity, urduPensionBank } = currentPensioner;
+        const urduRegex = /^[\u0600-\u06FF\u0750-\u077F\s]+$/;
 
-        if (!name || !cnic || !email || !number || !address || !dob || !pensionBank || !city) {
+        if (!name || !cnic || !email || !number || !address || !dob || !pensionBank || !city || !urduCity
+            || !urduPensionBank || !urduCity) {
             alert("Any field is required.");
             return false;
+        }
+        if (!urduRegex.test(urduCity)) {
+            alert('شہر must be in urdu')
+            return false
+        }
+        if (!urduRegex.test(urduPensionBank)) {
+            alert('پنشن بینک must be in urdu')
+            return false
+        }
+        if (!urduRegex.test(urduName)) {
+            alert('نام must be in urdu')
+            return false
         }
 
         if (!/^\d+$/.test(cnic)) {
@@ -514,7 +550,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
             alert(response.data.mes);
             onClose();
 
-            if (response.data.mes === 'Pensioner Registered Successfully and Email Sent') {
+            if (response.data.mes === 'Pensioner Registered Successfully and Password Sent') {
                 updateVerify();
             }
         } catch (error) {
@@ -535,15 +571,17 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     type="text"
                     value={currentPensioner.name || ''}
                     onChange={handleNameChange}
-                    maxLength={10}
+                    maxLength={15}
                 />
-
-                <label>Username (auto-generated):</label>
+                <label className='urduLabel'>:نام</label>
                 <input
                     type="text"
-                    value={currentPensioner.username || ''}
-                    readOnly
+                    value={currentPensioner.urduName || ''}
+                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduName: e.target.value })) }}
+                    maxLength={15}
+                    className='urduInput'
                 />
+
 
                 <label>CNIC:</label>
                 <input
@@ -552,7 +590,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     maxLength={13}
                     onChange={(e) => {
                         setCurrentPensioner(prev => ({ ...prev, cnic: e.target.value }));
-                        setCurrentPensionerData(prev => ({ ...prev, cnic: e.target.value }));
+                        setCurrentPensionerData({ cnic: e.target.value });
                     }}
                 />
 
@@ -564,12 +602,6 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     maxLength={30}
                 />
 
-                <label>Password (auto-generated):</label>
-                <input
-                    type="password"
-                    value={currentPensioner.password || ''}
-                    readOnly
-                />
 
                 <label>Number:</label>
                 <input
@@ -593,12 +625,28 @@ const AddModal = ({ show, onClose, updateVerify }) => {
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
                     maxLength={20}
                 />
+                <label className='urduLabel'>:شہر</label>
+                <input
+                    type="text"
+                    value={currentPensioner.urduCity || ''}
+                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduCity: e.target.value })) }}
+                    maxLength={20}
+                    className='urduInput'
+                />
                 <label>Pension Bank:</label>
                 <input
                     type="text"
                     value={currentPensioner.pensionBank || ''}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={15}
+                    maxLength={20}
+                />
+                <label className='urduLabel'>:پنشن بینک</label>
+                <input
+                    type="text"
+                    value={currentPensioner.urduPensionBank || ''}
+                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduPensionBank: e.target.value })) }}
+                    maxLength={20}
+                    className='urduInput'
                 />
 
                 <label>DOB:</label>
@@ -617,9 +665,11 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
 
 export default function ManagePensioners() {
+    const { setCurrentPensionerData } = useContext(CreateContextApi);
     const [allPensioners, setAllPensioners] = useState([]);
     const [tempAllPensioner, setTempAllPensioners] = useState([]);
     const [filterText, setFilterText] = useState("")
+    const [searchCity, setSearchCity] = useState("")
     const [page, setPage] = useState(0);  // Current page index
     const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
     const { id } = useParams();
@@ -646,26 +696,12 @@ export default function ManagePensioners() {
         }
     }, [])
 
-
-
-    const enableDisablePensioner = async (pensioner) => {
-        try {
-            await axios.post('http://localhost:3001/enableDisablePensioner', pensioner)
-                .then((res) => {
-                    if (res.data.message === 'Successfull') {
-                        getPensioners()
-                    }
-                })
-        } catch (error) {
-            console.log(error.message);
-
-        }
-    }
     const handleUpdateClick = (pensioner) => {
         setShowUpdateModal(true);
         setPensioner({
-            _id: pensioner._id, name: pensioner.name, username: pensioner.username, password: pensioner.password,
-            number: pensioner.number, address: pensioner.address, pensionBank: pensioner.pensionBank, city: pensioner.city
+            _id: pensioner._id, name: pensioner.name, urduName: pensioner.urduName, password: pensioner.password,
+            number: pensioner.number, address: pensioner.address, pensionBank: pensioner.pensionBank, city: pensioner.city,
+            urduPensionBank: pensioner.urduPensionBank, urduCity: pensioner.urduCity
         })
     };
     const handleAddClick = () => {
@@ -685,7 +721,7 @@ export default function ManagePensioners() {
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.name.toLowerCase().includes(filterText.toLowerCase())
+                pensioner.cnic.includes(filterText)
             ))
         }
         else {
@@ -695,6 +731,22 @@ export default function ManagePensioners() {
         }
 
     }
+    const handleCityChange = (event) => {
+        setSearchCity(event.target.value)
+        setPage(0)
+        if (event.target.value) {
+            setTempAllPensioners(allPensioners.filter((pensioner) =>
+                pensioner.city.toLowerCase().includes(searchCity.toLowerCase())
+            ))
+        }
+        else {
+            console.log('empty');
+
+            setTempAllPensioners(allPensioners)
+        }
+
+    }
+
 
 
 
@@ -710,7 +762,10 @@ export default function ManagePensioners() {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);  // Reset the table to the first page whenever rows per page changes
     };
-
+    const filterOptions = createFilterOptions({
+        matchFrom: 'start',
+        stringify: (option) => option,
+    });
 
 
     return (
@@ -724,21 +779,42 @@ export default function ManagePensioners() {
                 border="ActiveBorder"
                 fullWidth
             >
-                <Card sx={{ width: '80%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
+                <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
                     <TableContainer>
                         <Box display="flex" justifyContent="flex-start">
                             <Button variant='contained' onClick={handleAddClick}>Add New pensioner</Button>
                         </Box>
+                        <Box display="flex" justifyContent="flex-end" gap="10px" marginBottom="10px">
 
-                        <Box display="flex" justifyContent="flex-end" >
-                            <TextField
-                                label="Search pensioner"
-                                variant="outlined"
-                                value={filterText}
-                                onChange={handleFilterChange}
-                            >
+                            <Box>
+                                <Autocomplete
+                                    options={cities}
+                                    onInputChange={(_, newInputValue) => {
+                                        // Check if the input is empty to trigger the clear function
+                                        if (newInputValue === "") {
+                                            setTempAllPensioners(allPensioners)
+                                        }
+                                    }}
+                                    getOptionLabel={(option) => option}
+                                    filterOptions={filterOptions}
+                                    sx={{ width: 300 }}
+                                    renderInput={(params) => <
+                                        TextField {...params} label="Filter By City"
+                                        value={searchCity}
+                                        onChange={handleCityChange}
+                                    />}
+                                />
+                            </Box>
+                            <Box >
+                                <TextField
+                                    label="Search pensioner"
+                                    variant="outlined"
+                                    value={filterText}
+                                    onChange={handleFilterChange}
+                                >
 
-                            </TextField>
+                                </TextField>
+                            </Box>
                         </Box>
                         <hr></hr>
                         <Table aria-label="simple table">
@@ -746,10 +822,10 @@ export default function ManagePensioners() {
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Username</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Cnic</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope='col'>City</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Pension Bank</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Number</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Phone Number</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
                                     <TableCell scope="col">Actions</TableCell>
                                 </TableRow>
@@ -764,7 +840,7 @@ export default function ManagePensioners() {
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.name}</TableCell>
 
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.username}</TableCell>
+                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.cnic}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.city}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.pensionBank}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.number}</TableCell>
@@ -773,8 +849,11 @@ export default function ManagePensioners() {
                                             <IconButton color='secondary' onClick={() => handleUpdateClick(pensioner)}>
                                                 <EditIcon />
                                             </IconButton>
-                                            <IconButton color='secondary' onClick={() => enableDisablePensioner(pensioner)}>
-                                                <Switch {...label} defaultChecked={pensioner.enable == false ? false : true} />
+                                            <IconButton color='secondary' onClick={() => {
+                                                setCurrentPensionerData({ cnic: pensioner.cnic });
+                                                setShowVerificationModal(true)
+                                            }}>
+                                                <EmergencyRecordingIcon />
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -793,7 +872,7 @@ export default function ManagePensioners() {
                     </TableContainer>
                     <hr></hr>
                 </Card>
-            </Box>
+            </Box >
             <AddModal
                 show={showAddModal}
                 updateVerify={() => setShowVerificationModal(true)}
@@ -849,3 +928,5 @@ const styles = {
         cursor: 'pointer',
     },
 };
+
+const cities = ['Ahmedpur East', 'Ahmadpur Sial', 'Alipur Chatha', 'Arifwala', 'Attock Tehsil', 'Baddomalhi', 'Bahawalnagar', 'Bahawalpur', 'Bakhri Ahmad Khan', 'Basirpur', 'Basti Dosa', 'Begowala', 'Bhakkar', 'Bhalwal', 'Bhawana', 'Bhera', 'Bhopalwala', 'Burewala', 'Chak Azam Saffo', 'Chak Jhumra', 'Chak One Hundred Twenty Nine Left', 'Chak Thirty-one -Eleven Left', 'Chak Two Hundred Forty-Nine TDA', 'Chakwal', 'Chawinda', 'Rabwah', 'Chichawatni', 'Chiniot', 'Chishtian', 'Choa Saidanshah', 'Chunian', 'Daira Din Panah', 'Dajal', 'Dandot RS', 'Darya Khan', 'Daska', 'Daultala', 'Dera Ghazi Khan', 'Dhanot', 'Dhaunkal', 'Dijkot', 'Dinan Bashnoian Wala', 'Dinga', 'Dipalpur', 'Dullewala', 'Dunga Bunga', 'Dunyapur', 'Eminabad', 'Faisalabad', 'Faqirwali', 'Faruka', 'Fazilpur', 'Fort Abbas', 'Garh Maharaja', 'Gojra', 'Gujar Khan', 'Gujranwala', 'Gujrat', 'Hadali', 'Hafizabad', 'Harnoli', 'Harunabad', 'Hasilpur', 'Haveli Lakha', 'Hazro', 'Hujra Shah Muqeem', 'Jahanian Shah', 'Jalalpur Jattan', 'Jalalpur Pirwala', 'Jampur', 'Jand', 'Jandiala Sher Khan', 'Jaranwala', 'Jatoi Shimali', 'Jauharabad', 'Jhang', 'Jhang Sadar', 'Jhawarian', 'Jhelum', 'Kabirwala', 'Kahna Nau', 'Kahuta', 'Kalabagh', 'Kalaswala', 'Kaleke Mandi', 'Kallar Kahar', 'Kalur Kot', 'Kamalia', 'Kamar Mushani', 'Kamoke', 'Kamra', 'Kanganpur', 'Karor', 'Kasur', 'Keshupur', 'Khairpur Tamiwali', 'Khandowa', 'Khanewal', 'Khanga Dogran', 'Khangarh', 'Khanpur', 'Kharian', 'Khewra', 'Khurrianwala', 'Khushab', 'Kot Addu Tehsil', 'Kot Ghulam Muhammad', 'Kot Mumin', 'Kot Radha Kishan', 'Kot Rajkour', 'Kot Samaba', 'Kot Sultan', 'Kotli Loharan', 'Kundian', 'Kunjah', 'Ladhewala Waraich', 'Lahore', 'Lala Musa', 'Lalian', 'Layyah', 'Layyah District', 'Liliani', 'Lodhran', 'Mailsi', 'Malakwal', 'Malakwal City', 'Mamu Kanjan', 'Mananwala', 'Mandi Bahauddin', 'Mangla', 'Mankera', 'Mehmand Chak', 'Mian Channun', 'Mianke Mor', 'Mianwali', 'Minchinabad', 'Mitha Tiwana', 'Moza Shahwala', 'Multan', 'Muridke', 'Murree', 'Mustafabad', 'Muzaffargarh', 'Nankana Sahib', 'Narang Mandi', 'Narowal', 'Naushahra Virkan', 'Nazir Town', 'Okara', 'Pakpattan', 'Pasrur', 'Pattoki', 'Phalia', 'Pind Dadan Khan', 'Pindi Bhattian', 'Pindi Gheb', 'Pir Mahal', 'Qadirpur Ran', 'Rahim Yar Khan', 'Raiwind', 'Raja Jang', 'Rajanpur', 'Rasulnagar', 'Rawalpindi', 'Rawalpindi District', 'Renala Khurd', 'Rojhan', 'Sadiqabad', 'Sahiwal', 'Sambrial', 'Sangla Hill', 'Sanjwal', 'Sarai Alamgir', 'Sarai Sidhu', 'Sargodha', 'Shorkot', 'Shahpur', 'Shahr Sultan', 'Shakargarh', 'Sharqpur', 'Sheikhupura', 'Shujaabad', 'Sialkot', 'Sillanwali', 'Sodhra', 'Sukheke Mandi', 'Surkhpur', 'Talagang', 'Talamba', 'Tandlianwala', 'Taunsa', 'Toba Tek Singh', 'Vihari', 'Wazirabad', 'Yazman', 'Zafarwal', 'Zahir Pir', 'Chuhar Kana', 'Dhok Awan', 'Daud Khel', 'Ferozewala', 'Gujranwala Division', 'Hasan Abdal', 'Kohror Pakka', 'Mandi Bahauddin District', 'Multan District', 'Pakki Shagwanwali', 'Qila Didar Singh', 'Rahimyar Khan District', 'Shahkot Tehsil', 'Umerkot', 'Wah', 'Warburton', 'West Punjab']

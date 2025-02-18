@@ -15,54 +15,14 @@ import hobbyAudio from '../assets/audios/اپنا پسندیدہ مشغلہ بت
 // Define the questions array
 const questions = [
     {
-        text: 'پنشنر ویریفیکیشن سسٹم میں آپ کو خوش آمدید',
-        file: welcomeAudio,
-    },
-    {
-        text: 'آپ کا نام کیا ہے؟',
+        text: 'کتاب پڑھنا شروع کریں۔',
         file: nameAudio,
     },
     {
-        text: 'آپ کس بینک سے پینشن لیتے ہیں؟',
-        file: bankAudio,
-    },
-    {
-        text: 'آپ کس شہر سے تعلق رکھتے ہیں؟',
-        file: cityAudio,
-    },
-    {
-        text: 'آپ کی تاریخ پیدائش کیا ہے؟',
-        file: dobAudio,
-    },
-    {
-        text: 'آپ کا شناختی کارڈ نمبر کیا ہے؟',
-        file: cnicAudio,
-    },
-    {
-        text: 'آپ کی عمر کتنی ہے؟',
-        file: ageAudio,
-    },
-    {
-        text: 'اپنے بہن بھائیوں کے بارے میں بتائیں۔',
-        file: siblingsAudio,
-    },
-    {
-        text: 'سیاست دان کون پسند ہے اور کیوں؟',
-        file: poiliticianAudio,
-    },
-    {
-        text: 'اپنے پسندیدہ سفر کے بارے میں بتائیں۔',
-        file: journeyAudio,
-    },
-    {
-        text: 'آج کل کے ملکی حالات کے بارے میں بتائیں۔',
-        file: countryAduio,
-    },
-    {
-        text: 'اپنا پسندیدہ مشغلہ بتائیں اور اس کے فائدے بتائیں۔',
-        file: hobbyAudio,
-    },
-    
+        text: 'کیمرے کی طرف دیکھیں۔',
+        file: nameAudio
+    }
+
 ];
 
 export default questions;

@@ -83,7 +83,8 @@ const upload = async (req, res) => {
 
 const addPensioner = async (req, res) => {
     try {
-        let { name, username, number, cnic, email, password, address, enable, pensionBank, city } = req.body; // Extract email and password from request body
+        let { name, username, number, cnic, email, password, address, enable, pensionBank, city,
+            urduName, urduCity, urduPensionBank } = req.body; // Extract email and password from request body
         // cnic = cnic.replace(/\s+/g, '');
         // email = email.replace(/\s+/g, '');
         // password = password.replace(/\s+/g, '');
@@ -103,7 +104,7 @@ const addPensioner = async (req, res) => {
             // Save the new pensioner
             const newPensioner = await PensionerModel({
                 name, username, number, cnic, email, password, address,
-                pensionBank, city, enable
+                pensionBank, city, enable, urduName, urduCity, urduPensionBank
             }).save();
 
             if (newPensioner) {
@@ -127,7 +128,7 @@ const addPensioner = async (req, res) => {
                 // Send the email
                 await transporter.sendMail(mailOptions);
 
-                res.send({ mes: 'Pensioner Registered Successfully and Email Sent' });
+                res.send({ mes: 'Pensioner Registered Successfully and Password Sent' });
             }
         }
     } catch (error) {
@@ -248,7 +249,7 @@ const updateOperator = async (req, res) => {
 
 const updatePensioner = async (req, res) => {
     try {
-        let { name, username, number, password, address, pensionBank, city } = req.body;
+        let { name, username, number, password, address, pensionBank, city, urduName, urduCity, urduPensionBank } = req.body;
         // password = password.replace(/\s+/g, '');
         // name = name.replace(/\s+/g, '');
         // username = username.replace(/\s+/g, '');
@@ -258,7 +259,7 @@ const updatePensioner = async (req, res) => {
 
         const pensioner = await PensionerModel.updateOne({ _id: req.body._id }, {
             name, username, number, password,
-            address, pensionBank, city
+            address, pensionBank, city, urduName, urduCity, urduPensionBank
         })
         if (pensioner) {
             // console.log(user);

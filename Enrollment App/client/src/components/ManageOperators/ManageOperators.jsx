@@ -32,7 +32,6 @@ const UpdateModal = ({ show, onClose, operator }) => {
             setCurrentOperator({
                 _id: operator._id,
                 name: operator.name,
-                username: operator.username,
                 password: operator.password,
                 number: operator.number,
                 address: operator.address
@@ -43,18 +42,13 @@ const UpdateModal = ({ show, onClose, operator }) => {
     if (!show) return null;
 
     const validateFields = () => {
-        const { name, username, password, number, address } = currentOperator;
+        const { name, password, number, address } = currentOperator;
 
-        if (!name || !username || !number || !address || !password) {
+        if (!name || !number || !address || !password) {
             alert("Any Field is required.");
             return false;
         }
 
-        // Check if username only contains lowercase letters, underscores, and digits
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            alert("Username should contain only lowercase letters, underscores, and digits.");
-            return false;
-        }
 
         // Check if password contains only allowed characters and no whitespace
         if (!/^[a-z0-9@_]+$/.test(password)) {
@@ -81,7 +75,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
                     onClose()
                 })
 
-        } catch (error) {
+        } catch (err) {
             alert(err.message)
         }
     };
@@ -98,16 +92,9 @@ const UpdateModal = ({ show, onClose, operator }) => {
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
                     maxLength={10}
                 />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={currentOperator.username}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, username: e.target.value }))}
-                    maxLength={14}
-                />
                 <label>Password:</label>
                 <input
-                    type="text"
+                    type="password"
                     value={currentOperator.password}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}
@@ -131,114 +118,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
         </div>
     );
 };
-const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
 
-    const [admin, setAdmin] = useState({});
-
-    useEffect(() => {
-        if (adminInfo) {
-            setAdmin({
-                _id: adminInfo._id,
-                name: adminInfo.name,
-                username: adminInfo.username,
-                password: adminInfo.password,
-                number: adminInfo.number,
-                address: adminInfo.address
-            });
-        }
-    }, [adminInfo])
-
-    if (!show) return null;
-
-    const validateFields = () => {
-        const { name, username, password, number, address } = adminInfo;
-
-        if (!name || !username || !number || !address || !password) {
-            alert("Any Field is required.");
-            return false;
-        }
-
-        // Check if username only contains lowercase letters, underscores, and digits
-        if (!/^[a-z0-9_]+$/.test(username)) {
-            alert("Username should contain only lowercase letters, underscores, and digits.");
-            return false;
-        }
-
-        // Check if password contains only allowed characters and no whitespace
-        if (!/^[a-z0-9@_]+$/.test(password)) {
-            alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
-            return false;
-        }
-
-        // Check if number contains only digits
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
-            return false;
-        }
-
-        return true;
-    };
-
-
-    const handleSubmit = async () => {
-        if (!validateFields()) return;
-        try {
-            await axios.post(`http://localhost:3001/updateOperator`, admin)
-                .then((res) => {
-                    alert(res.data.message);
-                    onClose()
-                })
-
-        } catch (error) {
-            alert(err.message)
-        }
-    };
-
-    return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <span className="close-icon" onClick={onClose}>&times;</span>
-                <h2>Update Account Info</h2>
-                <label>Name:</label>
-                <input
-                    type="text"
-                    value={admin.name}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={10}
-                />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={admin.username}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, username: e.target.value }))}
-                    maxLength={14}
-                />
-                <label>Password:</label>
-                <input
-                    type="text"
-                    value={admin.password}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, password: e.target.value }))}
-                    maxLength={13}
-                />
-                <label>Number:</label>
-                <input
-                    type="text"
-                    value={admin.number}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, number: e.target.value }))}
-                    maxLength={11}
-                />
-                <label>Address:</label>
-                <input
-                    type="text"
-                    value={admin.address}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
-                />
-                <button onClick={handleSubmit}>Update</button>
-            </div>
-        </div>
-    );
-};
 
 const AddModal = ({ show, onClose }) => {
 
@@ -271,20 +151,10 @@ const AddModal = ({ show, onClose }) => {
     // Function to generate a random password
 
 
-    // // Function to generate a username based on the name
-    const generateUsername = (name) => {
-        if (!name) return ""; // If no name is provided, return an empty string
-
-        const randomDigits = Math.floor(Math.random() * 900) + 100; // Generate 3 random digits
-        const username = `${name.toLowerCase()}_${randomDigits}`; // Add underscore and random digits
-        setCurrentOperator(prev => ({ ...prev, username }));
-    };
-
     // // When the name is updated, auto-generate the username
     const handleNameChange = (e) => {
         const name = e.target.value;
         setCurrentOperator(prev => ({ ...prev, name }));
-        generateUsername(name); // Generate username when name changes
     };
 
     const validateFields = () => {
@@ -322,7 +192,7 @@ const AddModal = ({ show, onClose }) => {
                     onClose()
                 })
 
-        } catch (error) {
+        } catch (err) {
             alert(err.message)
         }
     };
@@ -338,13 +208,6 @@ const AddModal = ({ show, onClose }) => {
                     value={currentOperator.name || ''}
                     onChange={handleNameChange}
                     maxLength={10}
-                />
-
-                <label>Username (auto-generated):</label>
-                <input
-                    type="text"
-                    value={currentOperator.username || ''}
-                    readOnly // Make this field read-only to show the auto-generated username
                 />
 
                 <label>CNIC:</label>
@@ -422,23 +285,12 @@ export default function ManageOperators() {
         setAllOperators(res);
         setTempAllOperators(res)
     }
-   
-
-    const getAccountInfo = async () => {
-        let data = await fetch(`http://localhost:3001/getAccountInfo/${id}`);
-        let res = await data.json();
-        setAdminInfo(res);
-    }
-
-    useEffect(() => {
-        // getAccountInfo();
-    }, [])
     useEffect(() => {
         if (allOperators.length === 0) {
             getOperators();
         }
     }, [])
-  
+
 
 
     const enableDisableOperator = async (operator) => {
@@ -457,7 +309,7 @@ export default function ManageOperators() {
     const handleUpdateClick = (operator) => {
         setShowUpdateModal(true);
         setOperator({
-            _id: operator._id, name: operator.name, username: operator.username, password: operator.password,
+            _id: operator._id, name: operator.name, password: operator.password,
             number: operator.number, address: operator.address
         })
     };
@@ -478,7 +330,7 @@ export default function ManageOperators() {
         setPage(0)
         if (event.target.value) {
             setTempAllOperators(allOperators.filter((operator) =>
-                operator.name.toLowerCase().includes(filterText.toLowerCase())
+                operator.cnic.includes(filterText)
             ))
         }
         else {
@@ -515,7 +367,7 @@ export default function ManageOperators() {
                 border="ActiveBorder"
                 fullWidth
             >
-                <Card sx={{ width: '80%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
+                <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
                     <TableContainer>
                         <Box display="flex" justifyContent="flex-start">
                             <Button variant='contained' onClick={handleAddClick}>Add New Operator</Button>
@@ -537,7 +389,7 @@ export default function ManageOperators() {
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Username</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Cnic</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Password</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Number</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
@@ -554,7 +406,7 @@ export default function ManageOperators() {
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.name}</TableCell>
 
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.username}</TableCell>
+                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.cnic}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.password}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.number}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.address}</TableCell>
@@ -592,12 +444,6 @@ export default function ManageOperators() {
                 show={showUpdateModal}
                 onClose={() => { setShowUpdateModal(false); getOperators() }}
                 operator={operator}
-            // onUpdate={handleUpdate}
-            />
-            <UpdateAccountModal
-                show={showAccountModal}
-                onClose={() => { setShowAccountModal(false); getAccountInfo(); toggleMenu(); }}
-                adminInfo={adminInfo}
             // onUpdate={handleUpdate}
             />
         </>

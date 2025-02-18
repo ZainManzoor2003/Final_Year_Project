@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const pensionerSchema = new mongoose.Schema({
     name: { type: String, trim: true },
-    username: { type: String, trim: true },
     cnic: { type: String, trim: true },
     email: { type: String, trim: true },
     password: { type: String, trim: true },
@@ -11,6 +10,9 @@ const pensionerSchema = new mongoose.Schema({
     dob: { type: String, trim: true },
     pensionBank: { type: String, trim: true },
     city: { type: String, trim: true },
+    urduName: { type: String, trim: true },
+    urduPensionBank: { type: String, trim: true },
+    urduCity: { type: String, trim: true },
     sessions: [
         {
             type: mongoose.Schema.Types.ObjectId,

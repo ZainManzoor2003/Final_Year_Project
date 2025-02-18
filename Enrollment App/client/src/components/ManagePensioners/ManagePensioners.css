@@ -260,15 +260,14 @@ tr:nth-child(even) {
 
 .modal-content {
   background: white;
-  width: 30vw;
-  overflow: scroll;
+  width: 30vw; 
+  overflow-y: auto; /* Enable vertical scrolling */
   padding: 20px;
   box-sizing: border-box;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* background-color: black; */
 }
 
 .close-icon {
@@ -283,6 +282,10 @@ tr:nth-child(even) {
   display: block;
   margin-top: 5px;
 }
+.modal-content .urduLabel{
+  text-align: right;
+  font-weight: bold;
+}
 
 .modal-content input {
   width: 100%;
@@ -295,9 +298,13 @@ tr:nth-child(even) {
   padding: 10px 0px;
   padding-left: 15px;
 }
+.modal-content .urduInput{
+  text-align: right;
+  padding-right: 15px;
+}
 
 .modal-content button {
-  margin-top: 20px;
+  margin-top: 10px;
   background-color: rgba(0, 0, 255, 0.747);
   border: none;
   color: white;

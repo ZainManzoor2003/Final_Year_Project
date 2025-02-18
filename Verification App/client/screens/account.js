@@ -17,8 +17,7 @@ export default function Account({ navigation }) {
     const { currentUser } = useContext(CreateContextApi)
     const [updateInfo, setUpdateInfo] = useState({
         _id: '',
-        name: '',
-        username: '',
+        urduName: '',
         password: '',
         number: '',
         address: ''
@@ -27,8 +26,7 @@ export default function Account({ navigation }) {
         if (currentUser) {
             setUpdateInfo({
                 _id: currentUser._id,
-                name: currentUser.name,
-                username: currentUser.username,
+                urduName: currentUser.urduName,
                 password: currentUser.password,
                 number: currentUser.number,
                 address: currentUser.address
@@ -76,22 +74,8 @@ export default function Account({ navigation }) {
                             placeholderTextColor="#7C808D"
                             selectionColor="#3662AA"
                             maxLength={13}
-                            value={updateInfo.name}
-                            onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, name: text }))}
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <View style={styles.icon}>
-                            <Feather name="user" size={22} color="#7C808D" />
-                        </View>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="یوزر نیم"
-                            placeholderTextColor="#7C808D"
-                            selectionColor="#3662AA"
-                            maxLength={13}
-                            value={updateInfo.username}
-                            onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, username: text }))}
+                            value={updateInfo.urduName}
+                            onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, urduName: text }))}
                         />
                     </View>
                     <View style={styles.inputContainer}>

@@ -131,7 +131,7 @@ export default function Verification({ navigation }) {
     // Function to check the status of a task ID
     const checkTaskStatus = async (id) => {
       try {
-        const response = await axios.get(`http://202.142.147.3:5005/result/${id}`);
+        const response = await axios.get(`https://077f-103-125-177-69.ngrok-free.app/result/${id}`);
 
         if (response.data) {
           console.log('Response for ID:', id, response.data);
@@ -179,21 +179,31 @@ export default function Verification({ navigation }) {
     // console.log('audio Response', audioResponse);
 
 
-    for (let index = 0; index < faceResponse.length; index++) {
-      const face = faceResponse[index];
+    for (let index = 0; index < audioResponse.length; index++) {
+      // const face = faceResponse[index];
       const audio = audioResponse[index].id;
+      const urduText = audioResponse[index].text;
       // console.log('face', index, face);
       // console.log('audio', index, audio);
+      // console.log('urduText', index, urduText);
 
       if (audio && audio == currentUser.cnic) {
-        result += 10
+        result += 2.5
       }
+      if (index >= 2) {
+        if (urduText.includes(randomQuestions[index].possibleAnswer)) {
+          result += 2.5;
+        }
+      }
+
       if (face.final_result && face.final_result == currentUser.cnic) {
-        result += 10;
+        result += 5;
       }
 
     }
     setFinalResult(result)
+    console.log(result);
+
     setQuestion('')
     setVideoUploaded(true)
     // console.log('Total Result', result);
@@ -208,8 +218,9 @@ export default function Verification({ navigation }) {
     // console.log('Face Response', faceResponse);
 
     if (faceResponse.length == 10 && audioResponse.length == 10) {
-      console.log('audioResponses',audioResponse);
-      
+      // console.log('audioResponses', audioResponse);
+      // console.log('faceResponses', faceResponse);
+
       finalResultCalculation()
 
     }
@@ -235,43 +246,43 @@ export default function Verification({ navigation }) {
   };
 
   useEffect(() => {
-    if (finalResult >= 50) {
+    if (finalResult >= 90) {
       showAlertWithAnimation(true);
-    } else if (finalResult < 50 && finalResult >= 0) {
+    } else if (finalResult < 90 && finalResult >= 0) {
       showAlertWithAnimation(false);
     }
   }, [finalResult]);
 
 
 
-  if (!permission || !micPermission || !mediaPermission) {
-    return <View />;
-  }
+  // if (!permission || !micPermission || !mediaPermission) {
+  //   return <View />;
+  // }
 
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button clickEvent={requestPermission} text={"Grant Camera"} />
-      </View>
-    );
-  }
-  if (!micPermission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to record audio</Text>
-        <Button clickEvent={requestMicPermission} text={"Grant Microphone"} />
-      </View>
-    );
-  }
-  if (!mediaPermission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to access media</Text>
-        <Button clickEvent={requestMediaPermission} text={"Grant Media"} />
-      </View>
-    );
-  }
+  // if (!permission.granted) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Text style={styles.message}>We need your permission to show the camera</Text>
+  //       <Button clickEvent={requestPermission} text={"Grant Camera"} />
+  //     </View>
+  //   );
+  // }
+  // if (!micPermission.granted) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Text style={styles.message}>We need your permission to record audio</Text>
+  //       <Button clickEvent={requestMicPermission} text={"Grant Microphone"} />
+  //     </View>
+  //   );
+  // }
+  // if (!mediaPermission.granted) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Text style={styles.message}>We need your permission to access media</Text>
+  //       <Button clickEvent={requestMediaPermission} text={"Grant Media"} />
+  //     </View>
+  //   );
+  // }
 
 
 
@@ -343,7 +354,7 @@ export default function Verification({ navigation }) {
       // converted_files.forEach(file => {
       //   console.log(`Converted file: ${file.name}, URI: ${file.uri}`);
       // });
-      setAudioResponse(pre => [...pre, id, text])
+      setAudioResponse(pre => [...pre, { id, text }]);
       // Alert.alert('Files converted and saved successfully');
     } catch (error) {
       console.log('Error uploading mp4 file to convert it into wav', error.message);
@@ -371,7 +382,7 @@ export default function Verification({ navigation }) {
     try {
       // console.log(videoUri);
       // Send the POST request
-      const response = await axios.post('http://202.142.147.3:5005/process',
+      const response = await axios.post('https://077f-103-125-177-69.ngrok-free.app/process',
         formData2,
         {
           headers: {

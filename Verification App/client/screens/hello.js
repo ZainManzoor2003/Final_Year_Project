@@ -10,14 +10,14 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CreateContextApi from "../ContextApi/CreateContextApi";
 import axios from "axios";
 
 export default function Hello({ navigation }) {
-    const [cnic, setCnic] = useState('3520282040462')
+    const [cnic, setCnic] = useState('3520282040461')
     const [password, setPassword] = useState('zain123')
-    const { ipAddress, setCurrentUser } = useContext(CreateContextApi);
+    const { ipAddress,setCurrentUser } = useContext(CreateContextApi);
 
     const handleLogin = async () => {
         if (!cnic || !password) {
@@ -31,10 +31,9 @@ export default function Hello({ navigation }) {
                         setCurrentUser(pre => ({
                             ...pre,
                             _id: res.data.user._id,
-                            name: res.data.user.name, cnic: res.data.user.cnic,
-                            username: res.data.user.username, number: res.data.user.number,
+                            urduName: res.data.user.urduName, cnic: res.data.user.cnic,number: res.data.user.number,
                             password: res.data.user.password, address: res.data.user.address,
-                            pensionBank: res.data.user.pensionBank, city: res.data.user.city,
+                            urduPensionBank: res.data.user.urduPensionBank, urduCity: res.data.user.urduCity,
                             totalSessions: res.data.user.sessions.length
                         }))
                         navigation.navigate('Home')
