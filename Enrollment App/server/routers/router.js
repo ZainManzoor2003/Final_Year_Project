@@ -9,7 +9,7 @@ const fs = require('fs');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         // console.log('File',file);
-        
+
         // Extract the base name and split it to get CNIC and sessions values
         const baseName = file.originalname.split('.')[0];
         const parts = baseName.split('_');
@@ -53,7 +53,7 @@ router.post('/login', connection.login)
 
 router.post("/upload", upload.single("video"), (req, res) => {
     try {
-        console.log("File uploaded successfully:", req.file);
+        // console.log("File uploaded successfully:", req.file);
         res.status(200).json({ message: "File uploaded successfully" });
     } catch (error) {
         res.status(500).json({ message: "File upload failed", error });

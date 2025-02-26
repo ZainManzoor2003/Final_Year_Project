@@ -259,9 +259,14 @@ const Verification = ({ show, onClose }) => {
                     },
                 });
                 console.log('Videos uploaded successfully:', response.data);
+                toast.success(`Pensioner Enrolled Successfully`, {
+                    position: 'top-center',
+                    autoClose: 3000
+                })
             } catch (error) {
                 console.error('Error uploading videos:', error);
             }
+            setIndex(0)
         }
         videoFiles.length == 6 && takeScreenshots()
 
@@ -272,10 +277,6 @@ const Verification = ({ show, onClose }) => {
             setIndex(index + 1);
             if (index === 5) {
                 setVideoUploaded(false);
-                toast.success(`Penioner Enrolled Successfully`, {
-                    position: 'top-center',
-                    autoClose: 3000
-                })
                 // setCameraDisabled(true);
                 onClose()
                 // setSubmit(true);

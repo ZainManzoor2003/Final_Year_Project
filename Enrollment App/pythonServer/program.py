@@ -14,16 +14,18 @@ UPLOAD_AUDIOS = "/tmp/audios"
 UPLOAD_FOLDER = "/tmp/uploads"
 CONVERTED_FOLDER = "/tmp/converted"
 ZIP_FOLDER = "/tmp/zipped_screenshots"
+ZIP_FOLDER_AUDIOS = "/tmp/zipped_audios"
 
 # Create directories if they don't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_AUDIOS, exist_ok=True)
 os.makedirs(CONVERTED_FOLDER, exist_ok=True)
 os.makedirs(ZIP_FOLDER, exist_ok=True)
+os.makedirs(ZIP_FOLDER_AUDIOS, exist_ok=True)
 
 # Flask API URL where the zip file will be sent
-FLASK_API_URL = "http://202.142.147.3:6001/upload_zip"
-FLASK_API_URL2 = "http://202.142.147.3:5003/uploaddd"
+FLASK_API_URL = "https://407c-111-68-102-25.ngrok-free.app/upload_wav"
+FLASK_API_URL2 = "https://1f35-111-68-102-12.ngrok-free.app/upload"
 
 
 @app.route("/convert", methods=["POST"])
@@ -34,11 +36,13 @@ def convert_videos_to_audio_and_zip():
 
     files = request.files.getlist("files")
     converted_files = []
+    zip_filename = ""
 
     for file in files:
         try:
             # Save the uploaded video file to the UPLOAD_FOLDER
             video_filename = file.filename
+            zip_filename = video_filename.split("_")[0] + ".zip"
             video_path = os.path.join(UPLOAD_AUDIOS, video_filename)
             file.save(video_path)
 
@@ -66,8 +70,7 @@ def convert_videos_to_audio_and_zip():
             )
 
     # Create a zip file containing all converted audio files
-    zip_filename = "converted_audios.zip"
-    zip_path = os.path.join(ZIP_FOLDER, zip_filename)
+    zip_path = os.path.join(ZIP_FOLDER_AUDIOS, zip_filename)
     with zipfile.ZipFile(zip_path, "w") as zipf:
         for audio_file in converted_files:
             zipf.write(audio_file, os.path.basename(audio_file))
@@ -77,19 +80,11 @@ def convert_videos_to_audio_and_zip():
         with open(zip_path, "rb") as zip_file:
             files = {"file": zip_file}
             response = requests.post(FLASK_API_URL, files=files)
-            response.raise_for_status()  # Raise an error if the request failed
+            # response.raise_for_status()  # Raise an error if the request failed
     except Exception as e:
         print(f"Error uploading zip file: {e}")
         return jsonify(error=f"Error uploading zip file: {str(e)}"), 500
 
-    # Clean up: Remove uploaded videos and converted audios
-    for file_path in converted_files:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    for file in files:
-        video_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        if os.path.exists(video_path):
-            os.remove(video_path)
 
     return jsonify(
         {"message": "All files processed, zipped, and uploaded successfully"}
@@ -99,7 +94,7 @@ def convert_videos_to_audio_and_zip():
     # return jsonify({"id":response.content})
 
 
-def extract_images_from_video(video_path, output_folder, num_images=40):
+def extract_images_from_video(video_path, output_folder, num_images=4):
     """Extracts `num_images` screenshots from the video at random intervals."""
     video = VideoFileClip(video_path)
     duration = video.duration
@@ -127,6 +122,15 @@ def create_zip_of_images(image_paths, zip_path):
         for image_path in image_paths:
             zipf.write(image_path, os.path.basename(image_path))
 
+def delete_files_in_folders(folders):
+    """Delete all files inside the given folders, keeping the folders intact."""
+    for folder in folders:
+        if os.path.exists(folder):
+            for file_name in os.listdir(folder):
+                file_path = os.path.join(folder, file_name)
+                if os.path.isfile(file_path):  # Delete only files, not subfolders
+                    os.remove(file_path)
+
 
 @app.route("/extract_images", methods=["POST"])
 def extract_images_from_videos():
@@ -138,10 +142,11 @@ def extract_images_from_videos():
         return jsonify(error="No video files provided"), 400
 
     all_screenshots = []
-
+    zip_filename = ""
     # Process each video file
     for video_file in files:
         video_filename = video_file.filename
+        zip_filename = video_file.filename.split("_")[0] + ".zip"
         video_path = os.path.join(UPLOAD_FOLDER, video_filename)
         video_file.save(video_path)
 
@@ -150,7 +155,6 @@ def extract_images_from_videos():
         all_screenshots.extend(screenshots)
 
     # Create a zip file of all the screenshots
-    zip_filename = "screenshots.zip"
     zip_path = os.path.join(ZIP_FOLDER, zip_filename)
     create_zip_of_images(all_screenshots, zip_path)
 
@@ -158,6 +162,10 @@ def extract_images_from_videos():
     with open(zip_path, "rb") as zip_file:
         files = {"file": zip_file}
         requests.post(FLASK_API_URL2, files=files)
+
+    delete_files_in_folders(
+        [UPLOAD_FOLDER, UPLOAD_AUDIOS, CONVERTED_FOLDER, ZIP_FOLDER, ZIP_FOLDER_AUDIOS]
+    )
 
     # if response.status_code == 200:
     #     return jsonify(message="Zip file sent successfully!")
