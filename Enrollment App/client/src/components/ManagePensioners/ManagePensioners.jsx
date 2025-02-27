@@ -95,7 +95,7 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`http://localhost:3001/updatePensioner`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updatePensioner`, currentOperator)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -375,7 +375,7 @@ const Verification = ({ show, onClose }) => {
                     formData.append("video", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
 
                     try {
-                        const response = await axios.post("http://localhost:3001/upload", formData, {
+                        const response = await axios.post("https://fyp-enrollment-server.vercel.app/upload", formData, {
                             headers: {
                                 "Content-Type": "multipart/form-data"
                             }
@@ -547,7 +547,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
         if (!validateFields()) return;
 
         try {
-            const response = await axios.post(`http://localhost:3001/addPensioner`, currentPensioner);
+            const response = await axios.post(`https://fyp-enrollment-server.vercel.app/addPensioner`, currentPensioner);
             alert(response.data.mes);
             onClose();
 
@@ -685,7 +685,7 @@ export default function ManagePensioners() {
     const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
 
     const getPensioners = async () => {
-        let data = await fetch(`http://localhost:3001/getPensioners`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
         setTempAllPensioners(res)

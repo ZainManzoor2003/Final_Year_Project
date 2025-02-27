@@ -30,7 +30,7 @@ export default function Login() {
         }
         else {
             setLoading(true)
-            await axios.post(`http://localhost:3001/login`, user).then((res) => {
+            await axios.post(`https://fyp-enrollment-server.vercel.app/login`, user).then((res) => {
                 // setLoading(!loading)
                 if (res.data.mes === 'Login Successfull') {
                     toast.success(res.data.mes, {

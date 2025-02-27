@@ -65,7 +65,7 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`http://localhost:3001/updateOperator`, admin)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updateOperator`, admin)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -144,7 +144,7 @@ function Navbar() {
     }
 
     const getAccountInfo = async () => {
-        let data = await fetch(`http://localhost:3001/getAccountInfo/${id}`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getAccountInfo/${id}`);
         let res = await data.json();
         setAdminInfo(res);
     }

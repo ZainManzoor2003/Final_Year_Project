@@ -30,7 +30,7 @@ export default function EnableDisablePensioner() {
     const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
 
     const getPensioners = async () => {
-        let data = await fetch(`http://localhost:3001/getPensioners`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
         setTempAllPensioners(res)
@@ -65,7 +65,7 @@ export default function EnableDisablePensioner() {
     };
     const enableDisablePensioner = async (pensioner) => {
         try {
-            await axios.post('http://localhost:3001/enableDisablePensioner', pensioner)
+            await axios.post('https://fyp-enrollment-server.vercel.app/enableDisablePensioner', pensioner)
                 .then((res) => {
                     if (res.data.message === 'Successfull') {
                         getPensioners()
