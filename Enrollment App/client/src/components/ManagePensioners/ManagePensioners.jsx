@@ -253,7 +253,7 @@ const Verification = ({ show, onClose }) => {
             formData.append('videos', videoFiles[lastIndex], `${currentPensionerData.cnic}_${lastIndex + 1}.mp4`);
 
             try {
-                const response = await axios.post('http://localhost:5001/extract_images', formData, {
+                const response = await axios.post('https://7d1a-103-179-241-151.ngrok-free.app/extract_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -403,7 +403,7 @@ const Verification = ({ show, onClose }) => {
                 formData.append('files', blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
             });
             try {
-                let response = await axios.post('http://localhost:5001/convert', formData, {
+                let response = await axios.post('https://7d1a-103-179-241-151.ngrok-free.app/convert', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
