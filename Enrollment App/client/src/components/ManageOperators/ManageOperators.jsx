@@ -34,7 +34,9 @@ const UpdateModal = ({ show, onClose, operator }) => {
                 name: operator.name,
                 password: operator.password,
                 number: operator.number,
-                address: operator.address
+                address: operator.address,
+                email: operator.email,
+                cnic: operator.cnic
             });
         }
     }, [operator])
@@ -44,8 +46,20 @@ const UpdateModal = ({ show, onClose, operator }) => {
     const validateFields = () => {
         const { name, password, number, address } = currentOperator;
 
-        if (!name || !number || !address || !password) {
-            alert("Any Field is required.");
+        if (!name) {
+            alert("Name is required.");
+            return false;
+        }
+        if (!number) {
+            alert("Number is required.");
+            return false;
+        }
+        if (!address) {
+            alert("Address is required.");
+            return false;
+        }
+        if (!password) {
+            alert("Password is required.");
             return false;
         }
 
@@ -56,11 +70,6 @@ const UpdateModal = ({ show, onClose, operator }) => {
             return false;
         }
 
-        // Check if number contains only digits
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
-            return false;
-        }
 
         return true;
     };
@@ -85,33 +94,50 @@ const UpdateModal = ({ show, onClose, operator }) => {
             <div className="modal-content">
                 <span className="close-icon" onClick={onClose}>&times;</span>
                 <h2>Update Data Entry Operator</h2>
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                     type="text"
                     value={currentOperator.name}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={10}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, name: value }))
+                    }}
+                    maxLength={30}
                 />
-                <label>Password:</label>
+                <label>Password:*</label>
                 <input
                     type="password"
                     value={currentOperator.password}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}
                 />
-                <label>Number:</label>
+                <label>Number:*</label>
                 <input
                     type="text"
                     value={currentOperator.number}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, number: value }))}}
                     maxLength={11}
                 />
-                <label>Address:</label>
+                <label>Address:*</label>
                 <input
                     type="text"
                     value={currentOperator.address}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
+                    maxLength={70}
+                />
+                <label>CNIC:</label>
+                <input
+                    type="text"
+                    disabled
+                    value={currentOperator.cnic}
+                />
+                <label>Email:</label>
+                <input
+                    type="text"
+                    value={currentOperator.email}
+                    disabled
                 />
                 <button onClick={handleSubmit}>Update</button>
             </div>
@@ -153,30 +179,40 @@ const AddModal = ({ show, onClose }) => {
 
     // // When the name is updated, auto-generate the username
     const handleNameChange = (e) => {
-        const name = e.target.value;
+        const name = e.target.value.replace(/[^A-Za-z\s]/g, "");
         setCurrentOperator(prev => ({ ...prev, name }));
     };
 
     const validateFields = () => {
         const { name, cnic, email, number, address, dob } = currentOperator;
 
-        if (!name || !cnic || !email || !number || !address || !dob) {
-            alert("Any field is required.");
+        if (!name) {
+            alert("Name is required.");
             return false;
         }
-
-        if (!/^\d+$/.test(cnic)) {
-            alert("CNIC should contain only numbers.");
+        if (!cnic) {
+            alert("CNIC is required.");
+            return false;
+        }
+        if (!email) {
+            alert("Email is required.");
+            return false;
+        }
+        if (!number) {
+            alert("Number is required.");
+            return false;
+        }
+        if (!address) {
+            alert("Address is required.");
+            return false;
+        }
+        if (!dob) {
+            alert("Date of Birth is required.");
             return false;
         }
 
         if (!/^\S+@\S+\.\S+$/.test(email)) {
             alert("Invalid email format.");
-            return false;
-        }
-
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
             return false;
         }
 
@@ -202,57 +238,64 @@ const AddModal = ({ show, onClose }) => {
             <div className="modal-content">
                 <span className="close-icon" onClick={onClose}>&times;</span>
                 <h2>Add Data Entry Operator</h2>
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                     type="text"
                     value={currentOperator.name || ''}
                     onChange={handleNameChange}
-                    maxLength={10}
+                    maxLength={30}
                 />
 
-                <label>CNIC:</label>
+                <label>CNIC:*</label>
                 <input
                     type="text"
                     value={currentOperator.cnic || ''}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, cnic: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, cnic: value }))
+                    }}
                     maxLength={13}
                 />
 
-                <label>Email:</label>
+                <label>Email:*</label>
                 <input
                     type="text"
                     value={currentOperator.email || ''}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, email: e.target.value }))}
-                    maxLength={30}
+                    maxLength={40}
                 />
 
-                <label>Password (auto-generated):</label>
+                <label>Password (auto-generated):*</label>
                 <input
                     type="text"
                     value={currentOperator.password || ''}
                     readOnly // Password is auto-generated and cannot be changed
                 />
 
-                <label>Number:</label>
+                <label>Number:*</label>
                 <input
                     type="text"
                     value={currentOperator.number || ''}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, number: value }))
+                    }}
                     maxLength={11}
                 />
 
-                <label>Address:</label>
+                <label>Address:*</label>
                 <input
                     type="text"
                     value={currentOperator.address || ''}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
+                    maxLength={70}
                 />
 
-                <label>DOB:</label>
+                <label>Date of Birth:*</label>
                 <input
                     type="date"
                     value={currentOperator.dob || ''}
+                    max={new Date().toISOString().split('T')[0]} // Set max date to today
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, dob: e.target.value }))}
                 />
                 <button onClick={handleSubmit}>Add</button>
@@ -267,6 +310,7 @@ export default function ManageOperators() {
     const [allOperators, setAllOperators] = useState([]);
     const [tempAllOperators, setTempAllOperators] = useState([]);
     const [filterText, setFilterText] = useState("")
+    const [filterName, setFilterName] = useState("")
     const [page, setPage] = useState(0);  // Current page index
     const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
     const { id } = useParams();
@@ -310,7 +354,8 @@ export default function ManageOperators() {
         setShowUpdateModal(true);
         setOperator({
             _id: operator._id, name: operator.name, password: operator.password,
-            number: operator.number, address: operator.address
+            number: operator.number, address: operator.address, email: operator.email,
+            cnic: operator.cnic
         })
     };
     const handleAddClick = () => {
@@ -331,6 +376,19 @@ export default function ManageOperators() {
         if (event.target.value) {
             setTempAllOperators(allOperators.filter((operator) =>
                 operator.cnic.includes(filterText)
+            ))
+        }
+        else {
+            setTempAllOperators(allOperators)
+        }
+
+    }
+    const handleFilterName = (event) => {
+        setFilterName(event.target.value)
+        setPage(0)
+        if (event.target.value) {
+            setTempAllOperators(allOperators.filter((operator) =>
+                operator.name.toLowerCase().includes(filterName.toLowerCase())
             ))
         }
         else {
@@ -372,26 +430,36 @@ export default function ManageOperators() {
                         <Box display="flex" justifyContent="flex-start">
                             <Button variant='contained' onClick={handleAddClick}>Add New Operator</Button>
                         </Box>
+                        <Box display="flex" justifyContent="space-between" gap="10px" marginBottom="10px"
+                            marginTop="10px">
+                            <Box>
+                                <TextField
+                                    label="Search By CNIC"
+                                    variant="outlined"
+                                    value={filterText}
+                                    onChange={handleFilterChange}
+                                >
 
-                        <Box display="flex" justifyContent="flex-end" >
-                            <TextField
-                                label="Search Operator"
-                                variant="outlined"
-                                value={filterText}
-                                onChange={handleFilterChange}
-                            >
+                                </TextField>
+                            </Box>
+                            <Box>
+                                <TextField
+                                    label="Search By Name"
+                                    variant="outlined"
+                                    value={filterName}
+                                    onChange={handleFilterName}
+                                >
 
-                            </TextField>
+                                </TextField>
+                            </Box>
                         </Box>
                         <hr></hr>
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Cnic</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Password</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Number</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">CNIC</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Contact Number</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
                                     <TableCell scope="col">Actions</TableCell>
                                 </TableRow>
@@ -402,12 +470,10 @@ export default function ManageOperators() {
                                         key={operator.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell sx={{ fontSize: '1.1rem' }} scope="row">{page * rowsPerPage + index + 1}</TableCell>
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.name}</TableCell>
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.cnic}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.password}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.number}</TableCell>
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{operator.address}</TableCell>
                                         <TableCell align='center'>

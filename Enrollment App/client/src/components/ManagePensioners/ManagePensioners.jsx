@@ -47,6 +47,8 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
                 city: pensioner.city,
                 urduPensionBank: pensioner.urduPensionBank,
                 urduCity: pensioner.urduCity,
+                email: pensioner.email,
+                cnic: pensioner.cnic
 
             });
         }
@@ -56,37 +58,50 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
 
     const validateFields = () => {
         const { name, password, number, address, pensionBank, city, urduName, urduCity, urduPensionBank } = currentOperator;
-        const urduRegex = /^[\u0600-\u06FF\u0750-\u077F\s]+$/;
 
-        if (!name || !number || !address || !password || !pensionBank || !city || !urduName
-            || !urduPensionBank || !urduCity) {
-            alert("Any Field is required.");
+        if (!name) {
+            alert("Name is required.");
             return false;
         }
-        if (!urduRegex.test(urduCity)) {
-            alert('شہر must be in urdu')
-            return false
+        if (!number) {
+            alert("Number is required.");
+            return false;
         }
-        if (!urduRegex.test(urduPensionBank)) {
-            alert('پنشن بینک must be in urdu')
-            return false
+        if (!address) {
+            alert("Address is required.");
+            return false;
         }
-        if (!urduRegex.test(urduName)) {
-            alert('نام must be in urdu')
-            return false
+        if (!password) {
+            alert("Password is required.");
+            return false;
         }
-
+        if (!pensionBank) {
+            alert("Pension Bank is required.");
+            return false;
+        }
+        if (!city) {
+            alert("City is required.");
+            return false;
+        }
+        if (!urduName) {
+            alert("Urdu Name is required.");
+            return false;
+        }
+        if (!urduPensionBank) {
+            alert("Urdu Pension Bank is required.");
+            return false;
+        }
+        if (!urduCity) {
+            alert("Urdu City is required.");
+            return false;
+        }
+        
         // Check if password contains only allowed characters and no whitespace
         if (!/^[a-z0-9@_]+$/.test(password)) {
             alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
             return false;
         }
 
-        // Check if number contains only digits
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
-            return false;
-        }
 
         return true;
     };
@@ -111,78 +126,114 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             <div className="modal-content">
                 <span className="close-icon" onClick={onClose}>&times;</span>
                 <h2>Update Pensioner</h2>
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                     type="text"
                     value={currentOperator.name}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={15}
+                    onChange={(e) => {
+                        const name = e.target.value.replace(/[^A-Za-z\s]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, name: name }))
+                    }}
+                    maxLength={30}
                 />
-                <label className='urduLabel'>:نام</label>
+                <label className='urduLabel'>*:نام</label>
                 <input
                     type="text"
                     value={currentOperator.urduName || ''}
-                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduName: e.target.value })) }}
-                    maxLength={15}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^ا-ی\s]/g, "");
+                        setCurrentOperator(pre => ({ ...pre, urduName: value }))
+                    }}
+                    maxLength={30}
                     className='urduInput'
                 />
-                <label>Username:</label>
-                <input
-                    type="text"
-                    value={currentOperator.username}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, username: e.target.value }))}
-                    maxLength={14}
-                />
-                <label>Password:</label>
+                <label>Password:*</label>
                 <input
                     type="password"
                     value={currentOperator.password}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}
                 />
-                <label>City:</label>
-                <input
-                    type="text"
+                <label>City:*</label>
+                <select
                     value={currentOperator.city}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, city: e.target.value }))}
-                    maxLength={13}
-                />
-                <label className='urduLabel'>:شہر</label>
-                <input
-                    type="text"
-                    value={currentOperator.urduCity || ''}
-                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduCity: e.target.value })) }}
-                    maxLength={20}
-                    className='urduInput'
-                />
-                <label>Pension Bank:</label>
-                <input
-                    type="text"
+                >
+                    <option value="">Select a City</option>
+                    {cities.map((city, index) => (
+                        <option key={index} value={city}>
+                            {city}
+                        </option>
+                    ))}
+                </select>
+                <label className='urduLabel'>*:شہر</label>
+                <select
+                    value={currentOperator.urduCity}
+                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduCity: e.target.value }))}
+                    style={{ textAlign: 'right' }}
+
+                >
+                    <option value="">شہر منتخب کریں</option>
+                    {citiesUrdu.map((city, index) => (
+                        <option key={index} value={city}>
+                            {city}
+                        </option>
+                    ))}
+                </select>
+                <label>Pension Bank:*</label>
+                <select
                     value={currentOperator.pensionBank}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={20}
-                />
-                <label className='urduLabel'>:پنشن بینک</label>
-                <input
-                    type="text"
-                    value={currentOperator.urduPensionBank || ''}
-                    onChange={(e) => { setCurrentOperator(pre => ({ ...pre, urduPensionBank: e.target.value })) }}
-                    maxLength={20}
-                    className='urduInput'
-                />
-                <label>Number:</label>
+                >
+                    <option value="">Select a Bank</option>
+                    {pakistanBanksEnglish.map((bank, index) => (
+                        <option key={index} value={bank}>
+                            {bank}
+                        </option>
+                    ))}
+                </select>
+                <label className='urduLabel'>*:پنشن بینک</label>
+                <select
+                    value={currentOperator.urduPensionBank}
+                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduPensionBank: e.target.value }))}
+                    style={{ textAlign: 'right' }}
+
+                >
+                    <option value="">بینک منتخب کریں</option>
+                    {pakistanBanksUrdu.map((bank, index) => (
+                        <option key={index} value={bank}>
+                            {bank}
+                        </option>
+                    ))}
+                </select>
+                <label>Number:*</label>
                 <input
                     type="text"
                     value={currentOperator.number}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentOperator(prev => ({ ...prev, number: value }))
+                    }}
                     maxLength={11}
                 />
-                <label>Address:</label>
+                <label>Address:*</label>
                 <input
                     type="text"
                     value={currentOperator.address}
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
+                    maxLength={70}
+                />
+                <label>CNIC:</label>
+                <input
+                    type="text"
+                    value={currentOperator.cnic}
+                    disabled
+                />
+                <label>Email:</label>
+                <input
+                    type="text"
+                    value={currentOperator.email}
+                    disabled
                 />
                 <button onClick={handleSubmit}>Update</button>
             </div>
@@ -253,7 +304,7 @@ const Verification = ({ show, onClose }) => {
             formData.append('videos', videoFiles[lastIndex], `${currentPensionerData.cnic}_${lastIndex + 1}.mp4`);
 
             try {
-                const response = await axios.post('https://7d1a-103-179-241-151.ngrok-free.app/extract_images', formData, {
+                const response = await axios.post('http://localhost:5001/extract_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -403,7 +454,7 @@ const Verification = ({ show, onClose }) => {
                 formData.append('files', blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
             });
             try {
-                let response = await axios.post('https://7d1a-103-179-241-151.ngrok-free.app/convert', formData, {
+                let response = await axios.post('http://localhost:5001/convert', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -498,45 +549,61 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
 
     const handleNameChange = (e) => {
-        const name = e.target.value;
+        const name = e.target.value.replace(/[^A-Za-z\s]/g, "");
         setCurrentPensioner(prev => ({ ...prev, name }));
     };
 
     // Validation function
     const validateFields = () => {
         const { name, cnic, email, number, address, dob, pensionBank, city, urduName, urduCity, urduPensionBank } = currentPensioner;
-        const urduRegex = /^[\u0600-\u06FF\u0750-\u077F\s]+$/;
 
-        if (!name || !cnic || !email || !number || !address || !dob || !pensionBank || !city || !urduCity
-            || !urduPensionBank || !urduCity) {
-            alert("Any field is required.");
+        if (!name) {
+            alert("Name is required.");
             return false;
         }
-        if (!urduRegex.test(urduCity)) {
-            alert('شہر must be in urdu')
-            return false
+        if (!cnic) {
+            alert("CNIC is required.");
+            return false;
         }
-        if (!urduRegex.test(urduPensionBank)) {
-            alert('پنشن بینک must be in urdu')
-            return false
+        if (!email) {
+            alert("Email is required.");
+            return false;
         }
-        if (!urduRegex.test(urduName)) {
-            alert('نام must be in urdu')
-            return false
+        if (!number) {
+            alert("Number is required.");
+            return false;
         }
-
-        if (!/^\d+$/.test(cnic)) {
-            alert("CNIC should contain only numbers.");
+        if (!address) {
+            alert("Address is required.");
+            return false;
+        }
+        if (!dob) {
+            alert("Date of Birth is required.");
+            return false;
+        }
+        if (!pensionBank) {
+            alert("Pension Bank is required.");
+            return false;
+        }
+        if (!city) {
+            alert("City is required.");
+            return false;
+        }
+        if (!urduName) {
+            alert("Urdu Name is required.");
+            return false;
+        }
+        if (!urduPensionBank) {
+            alert("Urdu Pension Bank is required.");
+            return false;
+        }
+        if (!urduCity) {
+            alert("Urdu City is required.");
             return false;
         }
 
         if (!/^\S+@\S+\.\S+$/.test(email)) {
             alert("Invalid email format.");
-            return false;
-        }
-
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
             return false;
         }
 
@@ -566,94 +633,121 @@ const AddModal = ({ show, onClose, updateVerify }) => {
             <div className="modal-content">
                 <span className="close-icon" onClick={onClose}>&times;</span>
                 <h2>Add Pensioner</h2>
-
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                     type="text"
                     value={currentPensioner.name || ''}
                     onChange={handleNameChange}
-                    maxLength={15}
+                    maxLength={30}
                 />
-                <label className='urduLabel'>:نام</label>
+                <label className='urduLabel'>*:نام</label>
                 <input
                     type="text"
                     value={currentPensioner.urduName || ''}
-                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduName: e.target.value })) }}
-                    maxLength={15}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^ا-ی\s]/g, "");
+                        setCurrentPensioner(pre => ({ ...pre, urduName: value }))
+                    }}
+                    maxLength={30}
                     className='urduInput'
                 />
 
 
-                <label>CNIC:</label>
+                <label>CNIC:*</label>
                 <input
                     type="text"
                     value={currentPensioner.cnic || ''}
                     maxLength={13}
                     onChange={(e) => {
-                        setCurrentPensioner(prev => ({ ...prev, cnic: e.target.value }));
-                        setCurrentPensionerData({ cnic: e.target.value });
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentPensioner(prev => ({ ...prev, cnic: value }));
+                        setCurrentPensionerData({ cnic: value });
                     }}
                 />
+                <label>City:*</label>
+                <select
+                    value={currentPensioner.city || ''}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
+                >
+                    <option value="">Select a City</option>
+                    {cities.map((city, index) => (
+                        <option key={index} value={city}>
+                            {city}
+                        </option>
+                    ))}
+                </select>
+                <label className='urduLabel'>*:شہر</label>
+                <select
+                    value={currentPensioner.urduCity || ''}
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduCity: e.target.value }))}
+                    style={{ textAlign: 'right' }}
 
-                <label>Email:</label>
+                >
+                    <option value="">شہر منتخب کریں</option>
+                    {citiesUrdu.map((city, index) => (
+                        <option key={index} value={city}>
+                            {city}
+                        </option>
+                    ))}
+                </select>
+
+                <label>Email:*</label>
                 <input
                     type="text"
                     value={currentPensioner.email || ''}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, email: e.target.value }))}
-                    maxLength={30}
+                    maxLength={40}
                 />
 
-
-                <label>Number:</label>
+                <label>Number:*</label>
                 <input
                     type="text"
                     value={currentPensioner.number || ''}
                     maxLength={11}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setCurrentPensioner(prev => ({ ...prev, number: value }))
+                    }}
                 />
 
-                <label>Address:</label>
+                <label>Address:*</label>
                 <input
                     type="text"
                     value={currentPensioner.address || ''}
-                    maxLength={35}
+                    maxLength={70}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
                 />
-                <label>City:</label>
-                <input
-                    type="text"
-                    value={currentPensioner.city || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
-                    maxLength={20}
-                />
-                <label className='urduLabel'>:شہر</label>
-                <input
-                    type="text"
-                    value={currentPensioner.urduCity || ''}
-                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduCity: e.target.value })) }}
-                    maxLength={20}
-                    className='urduInput'
-                />
-                <label>Pension Bank:</label>
-                <input
-                    type="text"
+                <label>Pension Bank:*</label>
+                <select
                     value={currentPensioner.pensionBank || ''}
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, pensionBank: e.target.value }))}
-                    maxLength={20}
-                />
-                <label className='urduLabel'>:پنشن بینک</label>
-                <input
-                    type="text"
+                >
+                    <option value="">Select a Bank</option>
+                    {pakistanBanksEnglish.map((bank, index) => (
+                        <option key={index} value={bank}>
+                            {bank}
+                        </option>
+                    ))}
+                </select>
+                <label className='urduLabel'>*:پنشن بینک</label>
+                <select
                     value={currentPensioner.urduPensionBank || ''}
-                    onChange={(e) => { setCurrentPensioner(pre => ({ ...pre, urduPensionBank: e.target.value })) }}
-                    maxLength={20}
-                    className='urduInput'
-                />
+                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduPensionBank: e.target.value }))}
+                    style={{ textAlign: 'right' }}
 
-                <label>DOB:</label>
+                >
+                    <option value="">بینک منتخب کریں</option>
+                    {pakistanBanksUrdu.map((bank, index) => (
+                        <option key={index} value={bank}>
+                            {bank}
+                        </option>
+                    ))}
+                </select>
+                <label>Date of Birth:*</label>
                 <input
                     type="date"
                     value={currentPensioner.dob || ''}
+                    max={new Date().toISOString().split('T')[0]} // Set max date to today
                     onChange={(e) => setCurrentPensioner(prev => ({ ...prev, dob: e.target.value }))}
                 />
 
@@ -702,7 +796,8 @@ export default function ManagePensioners() {
         setPensioner({
             _id: pensioner._id, name: pensioner.name, urduName: pensioner.urduName, password: pensioner.password,
             number: pensioner.number, address: pensioner.address, pensionBank: pensioner.pensionBank, city: pensioner.city,
-            urduPensionBank: pensioner.urduPensionBank, urduCity: pensioner.urduCity
+            urduPensionBank: pensioner.urduPensionBank, urduCity: pensioner.urduCity, email: pensioner.email,
+            cnic: pensioner.cnic
         })
     };
     const handleAddClick = () => {
@@ -785,7 +880,18 @@ export default function ManagePensioners() {
                         <Box display="flex" justifyContent="flex-start">
                             <Button variant='contained' onClick={handleAddClick}>Add New pensioner</Button>
                         </Box>
-                        <Box display="flex" justifyContent="flex-end" gap="10px" marginBottom="10px">
+                        <Box display="flex" justifyContent="space-between" gap="10px" marginBottom="10px"
+                            marginTop="10px">
+                            <Box >
+                                <TextField
+                                    label="Search By CNIC"
+                                    variant="outlined"
+                                    value={filterText}
+                                    onChange={handleFilterChange}
+                                >
+
+                                </TextField>
+                            </Box>
 
                             <Box>
                                 <Autocomplete
@@ -806,27 +912,16 @@ export default function ManagePensioners() {
                                     />}
                                 />
                             </Box>
-                            <Box >
-                                <TextField
-                                    label="Search pensioner"
-                                    variant="outlined"
-                                    value={filterText}
-                                    onChange={handleFilterChange}
-                                >
-
-                                </TextField>
-                            </Box>
                         </Box>
                         <hr></hr>
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Cnic</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">CNIC</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope='col'>City</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Pension Bank</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Phone Number</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Contact Number</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
                                     <TableCell scope="col">Actions</TableCell>
                                 </TableRow>
@@ -837,7 +932,6 @@ export default function ManagePensioners() {
                                         key={pensioner.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell sx={{ fontSize: '1.1rem' }} scope="row">{page * rowsPerPage + index + 1}</TableCell>
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.name}</TableCell>
 
@@ -931,3 +1025,86 @@ const styles = {
 };
 
 const cities = ['Ahmedpur East', 'Ahmadpur Sial', 'Alipur Chatha', 'Arifwala', 'Attock Tehsil', 'Baddomalhi', 'Bahawalnagar', 'Bahawalpur', 'Bakhri Ahmad Khan', 'Basirpur', 'Basti Dosa', 'Begowala', 'Bhakkar', 'Bhalwal', 'Bhawana', 'Bhera', 'Bhopalwala', 'Burewala', 'Chak Azam Saffo', 'Chak Jhumra', 'Chak One Hundred Twenty Nine Left', 'Chak Thirty-one -Eleven Left', 'Chak Two Hundred Forty-Nine TDA', 'Chakwal', 'Chawinda', 'Rabwah', 'Chichawatni', 'Chiniot', 'Chishtian', 'Choa Saidanshah', 'Chunian', 'Daira Din Panah', 'Dajal', 'Dandot RS', 'Darya Khan', 'Daska', 'Daultala', 'Dera Ghazi Khan', 'Dhanot', 'Dhaunkal', 'Dijkot', 'Dinan Bashnoian Wala', 'Dinga', 'Dipalpur', 'Dullewala', 'Dunga Bunga', 'Dunyapur', 'Eminabad', 'Faisalabad', 'Faqirwali', 'Faruka', 'Fazilpur', 'Fort Abbas', 'Garh Maharaja', 'Gojra', 'Gujar Khan', 'Gujranwala', 'Gujrat', 'Hadali', 'Hafizabad', 'Harnoli', 'Harunabad', 'Hasilpur', 'Haveli Lakha', 'Hazro', 'Hujra Shah Muqeem', 'Jahanian Shah', 'Jalalpur Jattan', 'Jalalpur Pirwala', 'Jampur', 'Jand', 'Jandiala Sher Khan', 'Jaranwala', 'Jatoi Shimali', 'Jauharabad', 'Jhang', 'Jhang Sadar', 'Jhawarian', 'Jhelum', 'Kabirwala', 'Kahna Nau', 'Kahuta', 'Kalabagh', 'Kalaswala', 'Kaleke Mandi', 'Kallar Kahar', 'Kalur Kot', 'Kamalia', 'Kamar Mushani', 'Kamoke', 'Kamra', 'Kanganpur', 'Karor', 'Kasur', 'Keshupur', 'Khairpur Tamiwali', 'Khandowa', 'Khanewal', 'Khanga Dogran', 'Khangarh', 'Khanpur', 'Kharian', 'Khewra', 'Khurrianwala', 'Khushab', 'Kot Addu Tehsil', 'Kot Ghulam Muhammad', 'Kot Mumin', 'Kot Radha Kishan', 'Kot Rajkour', 'Kot Samaba', 'Kot Sultan', 'Kotli Loharan', 'Kundian', 'Kunjah', 'Ladhewala Waraich', 'Lahore', 'Lala Musa', 'Lalian', 'Layyah', 'Layyah District', 'Liliani', 'Lodhran', 'Mailsi', 'Malakwal', 'Malakwal City', 'Mamu Kanjan', 'Mananwala', 'Mandi Bahauddin', 'Mangla', 'Mankera', 'Mehmand Chak', 'Mian Channun', 'Mianke Mor', 'Mianwali', 'Minchinabad', 'Mitha Tiwana', 'Moza Shahwala', 'Multan', 'Muridke', 'Murree', 'Mustafabad', 'Muzaffargarh', 'Nankana Sahib', 'Narang Mandi', 'Narowal', 'Naushahra Virkan', 'Nazir Town', 'Okara', 'Pakpattan', 'Pasrur', 'Pattoki', 'Phalia', 'Pind Dadan Khan', 'Pindi Bhattian', 'Pindi Gheb', 'Pir Mahal', 'Qadirpur Ran', 'Rahim Yar Khan', 'Raiwind', 'Raja Jang', 'Rajanpur', 'Rasulnagar', 'Rawalpindi', 'Rawalpindi District', 'Renala Khurd', 'Rojhan', 'Sadiqabad', 'Sahiwal', 'Sambrial', 'Sangla Hill', 'Sanjwal', 'Sarai Alamgir', 'Sarai Sidhu', 'Sargodha', 'Shorkot', 'Shahpur', 'Shahr Sultan', 'Shakargarh', 'Sharqpur', 'Sheikhupura', 'Shujaabad', 'Sialkot', 'Sillanwali', 'Sodhra', 'Sukheke Mandi', 'Surkhpur', 'Talagang', 'Talamba', 'Tandlianwala', 'Taunsa', 'Toba Tek Singh', 'Vihari', 'Wazirabad', 'Yazman', 'Zafarwal', 'Zahir Pir', 'Chuhar Kana', 'Dhok Awan', 'Daud Khel', 'Ferozewala', 'Gujranwala Division', 'Hasan Abdal', 'Kohror Pakka', 'Mandi Bahauddin District', 'Multan District', 'Pakki Shagwanwali', 'Qila Didar Singh', 'Rahimyar Khan District', 'Shahkot Tehsil', 'Umerkot', 'Wah', 'Warburton', 'West Punjab']
+const citiesUrdu = [
+    'احمدپور شرقیہ', 'احمدپور سیال', 'علی پور چٹھہ', 'عارف والا', 'اٹک تحصیل', 'بدوملہی', 'بہاولنگر',
+    'بہاولپور', 'بخری احمد خان', 'بسیراپور', 'بستی دوسہ', 'بیگووالہ', 'بھکر', 'بھلوال', 'بھوانہ',
+    'بھیرہ', 'بھوپال والا', 'بورے والا', 'چک اعظم صفو', 'چک جھمرہ', 'چک 129 بائیں', 'چک 31-11 بائیں',
+    'چک 249 ٹی ڈی اے', 'چکوال', 'چونڈہ', 'ربوہ', 'چیچہ وطنی', 'چنیوٹ', 'چشتیاں', 'چوآ سیدن شاہ',
+    'چونیاں', 'دایرہ دین پناہ', 'ڈجال', 'ڈنڈوت آر ایس', 'دریا خان', 'ڈسکہ', 'دولتالا', 'ڈیرہ غازی خان',
+    'دھنوت', 'دھونکل', 'ڈجکوٹ', 'دینان بشنوئین والا', 'ڈنگہ', 'دیپالپور', 'دل والا', 'ڈونگا بونگا',
+    'دنیا پور', 'ایمن آباد', 'فیصل آباد', 'فقیر والی', 'فروکہ', 'فاضل پور', 'فورٹ عباس', 'گڑھ مہاراجہ',
+    'گوجرہ', 'گوجر خان', 'گوجرانوالہ', 'گجرات', 'حدالی', 'حافظ آباد', 'ہرنولی', 'ہارون آباد',
+    'حاصل پور', 'حویلی لکھا', 'حضرو', 'ہجرا شاہ مقیم', 'جہانیاں شاہ', 'جلالپور جٹاں', 'جلالپور پیر والا',
+    'جام پور', 'جند', 'جندالہ شیر خان', 'جرانوالہ', 'جاتوی شمالی', 'جوہر آباد', 'جھنگ', 'جھنگ صدر',
+    'جھاوریان', 'جہلم', 'کبیر والا', 'کاہنہ نو', 'کہوٹہ', 'کلاباغ', 'کالاسوالا', 'کالکے منڈی', 'کلر کہار',
+    'کلور کوٹ', 'کمالیہ', 'کمر مشانی', 'کامونکی', 'کامرا', 'کنجن پور', 'کرور', 'قصور', 'کیشوپور',
+    'خیرپور تامیوالی', 'کھنڈوا', 'خانیوال', 'خانگا ڈوگراں', 'خانگڑھ', 'خانپور', 'کھاریاں', 'خھیوڑہ',
+    'کھریاں والا', 'خوشاب', 'کوٹ ادو تحصیل', 'کوٹ غلام محمد', 'کوٹ مومن', 'کوٹ رادھا کشن', 'کوٹ راجکور',
+    'کوٹ سامابہ', 'کوٹ سلطان', 'کوٹلی لوہاراں', 'کنڈیان', 'کنجاہ', 'لدھیوالا وڑائچ', 'لاہور', 'لالہ موسی',
+    'لالیاں', 'لیہ', 'لیہ ضلع', 'لیلیانی', 'لودھراں', 'میلسی', 'ملکوال', 'ملکوال شہر', 'ماموں کانجن',
+    'منانوالہ', 'منڈی بہاؤالدین', 'منگلا', 'منکیرہ', 'محمد چک', 'میان چنوں', 'میانکے موڑ', 'میانوالی',
+    'منچن آباد', 'مٹھا تیوانہ', 'موزہ شاہ والا', 'ملتان', 'مریدکے', 'مری', 'مصطفی آباد', 'مظفر گڑھ',
+    'ننکانہ صاحب', 'نارنگ منڈی', 'نارووال', 'نوشہرہ ورکاں', 'نذیر ٹاؤن', 'اوکاڑہ', 'پاکپتن', 'پسرور',
+    'پتوکی', 'پھالیہ', 'پنڈ دادن خان', 'پنڈی بھٹیاں', 'پنڈی گھیب', 'پیر محل', 'قادری پور ران', 'رحیم یار خان',
+    'رائیونڈ', 'راجہ جنگ', 'راجن پور', 'رسول نگر', 'راولپنڈی', 'راولپنڈی ضلع', 'رینالہ خورد', 'روجھان',
+    'صادق آباد', 'ساہیوال', 'سمبڑیال', 'سانگلہ ہل', 'سنجوال', 'سرائے عالمگیر', 'سرائے سدھو', 'سرگودھا',
+    'شورکوٹ', 'شاہپور', 'شہر سلطان', 'شکر گڑھ', 'شرقپور', 'شیخوپورہ', 'شجاع آباد', 'سیالکوٹ', 'سلانوالی',
+    'سدھرا', 'سکھیکی منڈی', 'سرخپور', 'تلہ گنگ', 'تلمبہ', 'تاندلیانوالہ', 'تونسا', 'ٹوبہ ٹیک سنگھ',
+    'وہاڑی', 'وزیر آباد', 'یزمان', 'ظفر وال', 'ظہیر پیر', 'چوہر کانہ', 'ڈھوک اعوان', 'داؤد خیل', 'فیروز والا',
+    'گوجرانوالہ ڈویژن', 'حسن ابدال', 'کروڑ پکا', 'منڈی بہاؤالدین ضلع', 'ملتان ضلع', 'پکی شگوان والی',
+    'قلعہ دیدار سنگھ', 'رحیم یار خان ضلع', 'شاہ کوٹ تحصیل', 'عمرکوٹ', 'واہ', 'واربرٹن', 'مغربی پنجاب'
+];
+const pakistanBanksEnglish = [
+    "Allied Bank Limited",
+    "Askari Bank Limited",
+    "Bank Alfalah Limited",
+    "Bank Al Habib Limited",
+    "Bank Islami Pakistan Limited",
+    "Dubai Islamic Bank Pakistan Limited",
+    "Faysal Bank Limited",
+    "First Women Bank Limited",
+    "Habib Bank Limited",
+    "Habib Metropolitan Bank Limited",
+    "JS Bank Limited",
+    "MCB Bank Limited",
+    "MCB Islamic Bank Limited",
+    "Meezan Bank Limited",
+    "National Bank of Pakistan",
+    "SILK Bank Limited",
+    "Sindh Bank Limited",
+    "Soneri Bank Limited",
+    "Standard Chartered Bank Pakistan Limited",
+    "Summit Bank Limited",
+    "The Bank of Khyber",
+    "The Bank of Punjab",
+    "United Bank Limited",
+    "Zarai Taraqiati Bank Limited"
+];
+const pakistanBanksUrdu = [
+    "الائیڈ بینک لمیٹڈ",
+    "عسکری بینک لمیٹڈ",
+    "بینک الفلاح لمیٹڈ",
+    "بینک الحبیب لمیٹڈ",
+    "بینک اسلامی پاکستان لمیٹڈ",
+    "دبئی اسلامک بینک پاکستان لمیٹڈ",
+    "فیصل بینک لمیٹڈ",
+    "فرسٹ ویمن بینک لمیٹڈ",
+    "حبیب بینک لمیٹڈ",
+    "حبیب میٹروپولیٹن بینک لمیٹڈ",
+    "جے ایس بینک لمیٹڈ",
+    "ایم سی بی بینک لمیٹڈ",
+    "ایم سی بی اسلامک بینک لمیٹڈ",
+    "میزان بینک لمیٹڈ",
+    "نیشنل بینک آف پاکستان",
+    "سلک بینک لمیٹڈ",
+    "سندھ بینک لمیٹڈ",
+    "سونیری بینک لمیٹڈ",
+    "اسٹینڈرڈ چارٹرڈ بینک پاکستان لمیٹڈ",
+    "سمٹ بینک لمیٹڈ",
+    "بینک آف خیبر",
+    "بینک آف پنجاب",
+    "یونائیٹڈ بینک لمیٹڈ",
+    "زرعی ترقیاتی بینک لمیٹڈ"
+];
+
+

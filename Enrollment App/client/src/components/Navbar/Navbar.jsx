@@ -31,7 +31,9 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
                 name: adminInfo.name,
                 password: adminInfo.password,
                 number: adminInfo.number,
-                address: adminInfo.address
+                address: adminInfo.address,
+                email: adminInfo.email,
+                cnic: adminInfo.cnic
             });
         }
     }, [adminInfo])
@@ -41,22 +43,28 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     const validateFields = () => {
         const { name, password, number, address } = adminInfo;
 
-        if (!name || !number || !address || !password) {
-            alert("Any Field is required.");
+        if (!name) {
+            alert("Name is required.");
             return false;
         }
-
+        if (!number) {
+            alert("Number is required.");
+            return false;
+        }
+        if (!address) {
+            alert("Address is required.");
+            return false;
+        }
+        if (!password) {
+            alert("Password is required.");
+            return false;
+        }
         // Check if password contains only allowed characters and no whitespace
         if (!/^[a-z0-9@_]+$/.test(password)) {
             alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
             return false;
         }
 
-        // Check if number contains only digits
-        if (!/^\d+$/.test(number)) {
-            alert("Number should contain only digits.");
-            return false;
-        }
 
         return true;
     };
@@ -81,33 +89,49 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
             <div className="modal-content">
                 <span className="close-icon" onClick={onClose}>&times;</span>
                 <h2>Update Account Info</h2>
-                <label>Name:</label>
+                <label>Name:*</label>
                 <input
                     type="text"
                     value={admin.name}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, name: e.target.value }))}
-                    maxLength={10}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
+                        setAdmin(prev => ({ ...prev, name: value }))}}
+                    maxLength={30}
                 />
-                <label>Password:</label>
+                <label>Password:*</label>
                 <input
                     type="password"
                     value={admin.password}
                     onChange={(e) => setAdmin(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}
                 />
-                <label>Number:</label>
+                <label>Number:*</label>
                 <input
                     type="text"
                     value={admin.number}
-                    onChange={(e) => setAdmin(prev => ({ ...prev, number: e.target.value }))}
+                    onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, "");
+                        setAdmin(prev => ({ ...prev, number: value }))}}
                     maxLength={11}
                 />
-                <label>Address:</label>
+                <label>Address:*</label>
                 <input
                     type="text"
                     value={admin.address}
                     onChange={(e) => setAdmin(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={35}
+                    maxLength={70}
+                />
+                <label>CNIC:</label>
+                <input
+                    type="text"
+                    value={admin.cnic}
+                    disabled
+                />
+                <label>Email:</label>
+                <input
+                    type="text"
+                    value={admin.email}
+                    disabled
                 />
                 <button onClick={handleSubmit}>Update</button>
             </div>

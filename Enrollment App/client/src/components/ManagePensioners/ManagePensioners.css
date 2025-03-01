@@ -268,6 +268,7 @@ tr:nth-child(even) {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border-radius: 10px;
 }
 
 .close-icon {
@@ -281,13 +282,14 @@ tr:nth-child(even) {
 .modal-content label {
   display: block;
   margin-top: 5px;
+  font-size: 15px;
 }
 .modal-content .urduLabel{
   text-align: right;
   font-weight: bold;
 }
 
-.modal-content input {
+.modal-content input,select {
   width: 100%;
   border: 2px solid black;
   margin-top: 0px;

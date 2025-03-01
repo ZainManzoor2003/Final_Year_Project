@@ -24,6 +24,7 @@ export default function EnableDisablePensioner() {
     const [allPensioners, setAllPensioners] = useState([]);
     const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
     const [filterText, setFilterText] = useState("")
+    const [filterName, setFilterName] = useState("")
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [tempAllPensioners, setTempAllPensioners] = useState([]);
     const [page, setPage] = useState(0);  // Current page index
@@ -47,6 +48,19 @@ export default function EnableDisablePensioner() {
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
                 pensioner.cnic.includes(filterText)
+            ))
+        }
+        else {
+            setTempAllPensioners(allPensioners)
+        }
+
+    }
+    const handleFilterName = (event) => {
+        setFilterName(event.target.value)
+        setPage(0)
+        if (event.target.value) {
+            setTempAllPensioners(allPensioners.filter((pensioner) =>
+                pensioner.name.toLowerCase().includes(filterName.toLowerCase())
             ))
         }
         else {
@@ -90,25 +104,36 @@ export default function EnableDisablePensioner() {
                 <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
                     <TableContainer>
 
-                        <Box display="flex" justifyContent="flex-end" >
-                            <TextField
-                                label="Search pensioner"
-                                variant="outlined"
-                                value={filterText}
-                                onChange={handleFilterChange}
-                            >
+                        <Box display="flex" justifyContent="flex-end" gap="10px" marginBottom="10px">
 
-                            </TextField>
+                            <Box>
+                                <TextField
+                                    label="Search By Name"
+                                    variant="outlined"
+                                    value={filterName}
+                                    onChange={handleFilterName}
+                                >
+
+                                </TextField>
+                            </Box>
+                            <Box>
+                                <TextField
+                                    label="Search By CNIC"
+                                    variant="outlined"
+                                    value={filterText}
+                                    onChange={handleFilterChange}
+                                >
+
+                                </TextField>
+                            </Box>
                         </Box>
                         <hr></hr>
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">#</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Cnic</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope='col'>Password</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Sessions</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">CNIC</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
                                     <TableCell scope="col">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -118,13 +143,11 @@ export default function EnableDisablePensioner() {
                                         key={pensioner.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell sx={{ fontSize: '1.1rem' }} scope="row">{page * rowsPerPage + index + 1}</TableCell>
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.name}</TableCell>
 
                                         <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.cnic}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.password}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.sessions.length}</TableCell>
+                                        <TableCell sx={{ fontSize: '1.1rem' }}>{pensioner.address}</TableCell>
                                         <TableCell align='center'>
                                             <IconButton color='secondary' onClick={() => enableDisablePensioner(pensioner)}>
                                                 <Switch {...label} defaultChecked={pensioner.enable == false ? false : true} />
