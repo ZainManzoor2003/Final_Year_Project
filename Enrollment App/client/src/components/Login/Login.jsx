@@ -22,12 +22,39 @@ export default function Login() {
             ...user, [name]: value
         })
     }
-    const login = async () => {
-        if (user.email === '' || user.password === '') {
-            toast.error('Please Fill the inputs fields', {
-                autoClose: 1000
-            })
+    const validateFields = () => {
+
+        if (!user.email && !user.password) {
+            alert("Email and password required.");
+            return false;
         }
+        if (!user.email) {
+            alert("Email is required.");
+            return false;
+        }
+        if (!user.password) {
+            alert("Password is required.");
+            return false;
+        }
+        if (user.password.length < 8 || user.password.length > 13) {
+            alert("Password must be between 8 to 13  characters.");
+            return false;
+        }
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(user.email)) {
+            alert("Invalid email format.");
+            return false;
+        }
+        // Check if password contains only allowed characters and no whitespace
+        if (!/^[a-z0-9@_]+$/.test(user.password)) {
+            alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+            return false;
+        }
+
+
+        return true;
+    };
+    const login = async () => {
+        if (!validateFields()) return;
         else {
             setLoading(true)
             await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/login`, user).then((res) => {
@@ -74,7 +101,7 @@ export default function Login() {
                     </div>
                     <div className="password">
                         <div className="icon"> <RiLockPasswordFill /></div>
-                        <input type="password" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
+                        <input type="text" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
                     </div>
                     <button disabled={loading} className='submit-btn' onClick={() => login()}>Log In</button>
                 </div>
