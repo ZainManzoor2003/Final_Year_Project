@@ -211,7 +211,7 @@ const AddModal = ({ show, onClose }) => {
             return false;
         }
 
-        if (!/^\S+@\S+\.\S+$/.test(email)) {
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
             alert("Invalid email format.");
             return false;
         }
