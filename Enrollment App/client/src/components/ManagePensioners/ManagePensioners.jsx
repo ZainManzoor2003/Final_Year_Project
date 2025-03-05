@@ -63,13 +63,27 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             alert("Name is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(name)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!number) {
             alert("Number is required.");
+            return false;
+        }
+        if (number.length < 11) {
+            alert("Number must be 11 digits.");
             return false;
         }
         if (!address) {
             alert("Address is required.");
             return false;
+        }
+        if(!/[A-Za-z]/.test(address)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
         }
         if (!password) {
             alert("Password is required.");
@@ -95,7 +109,11 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             alert("Urdu City is required.");
             return false;
         }
-        
+        if (password.length < 8 || password.length > 13) {
+            alert("Password must be between 8 to 13  characters.");
+            return false;
+        }
+
         // Check if password contains only allowed characters and no whitespace
         if (!/^[a-z0-9@_]+$/.test(password)) {
             alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
@@ -561,8 +579,17 @@ const AddModal = ({ show, onClose, updateVerify }) => {
             alert("Name is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(name)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!cnic) {
             alert("CNIC is required.");
+            return false;
+        }
+        if (cnic.length < 13) {
+            alert("CNIC must be 13 digits.");
             return false;
         }
         if (!email) {
@@ -571,6 +598,10 @@ const AddModal = ({ show, onClose, updateVerify }) => {
         }
         if (!number) {
             alert("Number is required.");
+            return false;
+        }
+        if (number.length < 11) {
+            alert("Number must be 11 digits.");
             return false;
         }
         if (!address) {
@@ -817,7 +848,7 @@ export default function ManagePensioners() {
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.cnic.includes(filterText)
+                pensioner.cnic.includes(event.target.value)
             ))
         }
         else {
@@ -829,10 +860,12 @@ export default function ManagePensioners() {
     }
     const handleCityChange = (event) => {
         setSearchCity(event.target.value)
+        console.log('direct select',event.target.value);
+        
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.city.toLowerCase().includes(searchCity.toLowerCase())
+                pensioner.city.toLowerCase().includes(event.target.value.toLowerCase())
             ))
         }
         else {
@@ -842,10 +875,6 @@ export default function ManagePensioners() {
         }
 
     }
-
-
-
-
 
 
     // Handle page change

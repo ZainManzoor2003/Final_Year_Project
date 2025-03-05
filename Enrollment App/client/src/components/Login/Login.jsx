@@ -101,7 +101,7 @@ export default function Login() {
                     </div>
                     <div className="password">
                         <div className="icon"> <RiLockPasswordFill /></div>
-                        <input type="text" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
+                        <input type="password" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
                     </div>
                     <button disabled={loading} className='submit-btn' onClick={() => login()}>Log In</button>
                 </div>

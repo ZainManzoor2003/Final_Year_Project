@@ -50,16 +50,34 @@ const UpdateModal = ({ show, onClose, operator }) => {
             alert("Name is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(name)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!number) {
             alert("Number is required.");
+            return false;
+        }
+        if (number.length < 11) {
+            alert("Number must be 11 digits.");
             return false;
         }
         if (!address) {
             alert("Address is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(address)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!password) {
             alert("Password is required.");
+            return false;
+        }
+        if (password.length < 8 || password.length > 13) {
+            alert("Password must be between 8 to 13  characters.");
             return false;
         }
 
@@ -117,7 +135,8 @@ const UpdateModal = ({ show, onClose, operator }) => {
                     value={currentOperator.number}
                     onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, "");
-                        setCurrentOperator(prev => ({ ...prev, number: value }))}}
+                        setCurrentOperator(prev => ({ ...prev, number: value }))
+                    }}
                     maxLength={11}
                 />
                 <label>Address:*</label>
@@ -190,8 +209,17 @@ const AddModal = ({ show, onClose }) => {
             alert("Name is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(name)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!cnic) {
             alert("CNIC is required.");
+            return false;
+        }
+        if (cnic.length < 13) {
+            alert("CNIC must be 13 digits.");
             return false;
         }
         if (!email) {
@@ -202,9 +230,18 @@ const AddModal = ({ show, onClose }) => {
             alert("Number is required.");
             return false;
         }
+        if (number.length < 11) {
+            alert("Number must be 11 digits.");
+            return false;
+        }
         if (!address) {
             alert("Address is required.");
             return false;
+        }
+        if(!/[A-Za-z]/.test(address)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
         }
         if (!dob) {
             alert("Date of Birth is required.");
@@ -375,7 +412,7 @@ export default function ManageOperators() {
         setPage(0)
         if (event.target.value) {
             setTempAllOperators(allOperators.filter((operator) =>
-                operator.cnic.includes(filterText)
+                operator.cnic.includes(event.target.value)
             ))
         }
         else {
@@ -388,7 +425,7 @@ export default function ManageOperators() {
         setPage(0)
         if (event.target.value) {
             setTempAllOperators(allOperators.filter((operator) =>
-                operator.name.toLowerCase().includes(filterName.toLowerCase())
+                operator.name.toLowerCase().includes(event.target.value.toLowerCase())
             ))
         }
         else {

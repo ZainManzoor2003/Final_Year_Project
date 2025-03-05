@@ -47,13 +47,27 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
             alert("Name is required.");
             return false;
         }
+        if(!/[A-Za-z]/.test(name)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
+        }
         if (!number) {
             alert("Number is required.");
+            return false;
+        }
+        if (number.length < 11) {
+            alert("Number must be 11 digits.");
             return false;
         }
         if (!address) {
             alert("Address is required.");
             return false;
+        }
+        if(!/[A-Za-z]/.test(address)){
+            alert("Only Spaces are not allowed.");
+            return false;
+
         }
         if (!password) {
             alert("Password is required.");
@@ -95,7 +109,9 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
                     value={admin.name}
                     onChange={(e) => {
                         const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                        setAdmin(prev => ({ ...prev, name: value }))}}
+                        value = value.trimStart();
+                        setAdmin(prev => ({ ...prev, name: value }))
+                    }}
                     maxLength={30}
                 />
                 <label>Password:*</label>
@@ -111,7 +127,8 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
                     value={admin.number}
                     onChange={(e) => {
                         const value = e.target.value.replace(/[^0-9]/g, "");
-                        setAdmin(prev => ({ ...prev, number: value }))}}
+                        setAdmin(prev => ({ ...prev, number: value }))
+                    }}
                     maxLength={11}
                 />
                 <label>Address:*</label>

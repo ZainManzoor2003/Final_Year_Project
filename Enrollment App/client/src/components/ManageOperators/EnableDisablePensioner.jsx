@@ -47,7 +47,7 @@ export default function EnableDisablePensioner() {
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.cnic.includes(filterText)
+                pensioner.cnic.includes(event.target.value)
             ))
         }
         else {
@@ -60,7 +60,7 @@ export default function EnableDisablePensioner() {
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
-                pensioner.name.toLowerCase().includes(filterName.toLowerCase())
+                pensioner.name.toLowerCase().includes(event.target.value.toLowerCase())
             ))
         }
         else {
