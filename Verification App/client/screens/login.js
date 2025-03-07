@@ -1,26 +1,53 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Alert, StyleSheet, Text, View } from 'react-native'
-import Input from '../components/input';
-import Button from '../components/button';
-import axios from 'axios';
-import CreateContextApi from '../ContextApi/CreateContextApi';
-import questions from '../assets/questions'
+import { StatusBar } from "expo-status-bar";
+import { Feather } from "@expo/vector-icons";
+import {
+    Alert,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import CreateContextApi from "../ContextApi/CreateContextApi";
+import axios from "axios";
 
-export default function Login({ navigation }) {
-    const [cnic, setCnic] = useState('3540145678962')
-    const [password, setPassword] = useState('zain123')
+export default function Hello({ navigation }) {
+    const [cnic, setCnic] = useState('3520282040461')
+    const [password, setPassword] = useState('zain1234')
     const { ipAddress, setCurrentUser } = useContext(CreateContextApi);
 
+    const validateFields = () => {
+        if (cnic.length < 13) {
+            Alert.alert("CNIC must be 13 digits.");
+            return false;
+        }
+        if (password.length < 8 || password.length > 13) {
+            Alert.alert("Password must be between 8 to 13  characters.");
+            return false;
+        }
+        return true
+    }
     const handleLogin = async () => {
         if (!cnic || !password) {
             Alert.alert('Please fill input fields')
             return
         }
+        if (!validateFields()) return;
         else {
-            await axios.post(`http://192.168.100.92:3001/login`, { cnic: cnic, password: password })
+            await axios.post(`https://verification-zeta.vercel.app/login`, { cnic: cnic, password: password })
                 .then(async (res) => {
                     if (res.data.mes === 'Login Successfully') {
-                        setCurrentUser({ name: res.data.user.name, cnic: res.data.user.cnic, totalSessions: res.data.user.sessions.length })
+                        setCurrentUser(pre => ({
+                            ...pre,
+                            _id: res.data.user._id,
+                            urduName: res.data.user.urduName, cnic: res.data.user.cnic, number: res.data.user.number,
+                            password: res.data.user.password, address: res.data.user.address,
+                            urduPensionBank: res.data.user.urduPensionBank, urduCity: res.data.user.urduCity,
+                            totalSessions: res.data.user.sessions.length
+                        }))
                         navigation.navigate('Home')
                     }
                     else {
@@ -31,29 +58,113 @@ export default function Login({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>لاگ ان کریں</Text>
-            <View style={{ margin: 20 }}>
-                <Input text={'شناختی کارڈ نمبر'} setValue={setCnic} value={cnic} maxLength={13} />
-                <Input text={'پاس ورڈ'} setValue={setPassword} value={password} />
-            </View>
-            <Button text={'لاگ ان'} clickEvent={handleLogin} />
-        </View>
-    )
+        <SafeAreaView style={styles.container}>
+            <StatusBar style="auto" />
+            <ScrollView
+                contentContainerStyle={{
+                    flex: 1 / 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <View style={styles.content}>
+                    <Text style={styles.title}>لاگ ان کریں</Text>
+                    <View style={styles.inputContainer}>
+                        <View style={styles.icon}>
+                            <Feather name="credit-card" size={22} color="#7C808D" />
+                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="شناختی کارڈ نمبر"
+                            placeholderTextColor="#7C808D"
+                            selectionColor="#3662AA"
+                            maxLength={13}
+                            value={cnic}
+                            onChangeText={(text) => {
+                                const value = text.replace(/[^0-9]/g, "");
+                                setCnic(value)
+                            }}
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <View style={styles.icon}>
+                            <Feather name="lock" size={22} color="#7C808D" />
+                        </View>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="پاس ورڈ"
+                            placeholderTextColor="#7C808D"
+                            selectionColor="#3662AA"
+                            secureTextEntry={true}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
+                            maxLength={13}
+                        />
+                    </View>
+                    {/* <TouchableOpacity style={styles.forgotPasswordButton}>
+                        <Text style={styles.forgotPasswordButtonText}>
+                            پہلی مرتبہ استعمال کر رہے ہیں.
+                        </Text>
+                    </TouchableOpacity> */}
+                    <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                        <Text style={styles.loginButtonText} >لاگ ان</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        backgroundColor: '#e1d5c9',
+        backgroundColor: "#fff",
     },
-    text: {
+    content: {
+        paddingHorizontal: 30,
+    },
+    title: {
         fontSize: 30,
-        textAlign: 'center',
-        fontFamily: 'Noto Nastaliq Urdu'
+        fontWeight: "bold",
+        marginBottom: 40,
+        textAlign: 'center'
+    },
+    inputContainer: {
+        flexDirection: "row-reverse",
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 20,
+    },
+    icon: {
+        marginLeft: 15,
+    },
+    input: {
+        borderBottomWidth: 1.5,
+        flex: 1,
+        paddingBottom: 10,
+        borderBottomColor: "#eee",
+        fontSize: 16,
+        textAlign: 'right'
+    },
+    forgotPasswordButton: {
+        alignSelf: "flex-start",
+    },
+    forgotPasswordButtonText: {
+        color: "#3662AA",
+        fontSize: 16,
+        fontWeight: "500",
+    },
+    loginButton: {
+        backgroundColor: "#3662AA",
+        padding: 14,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    loginButtonText: {
+        color: "#fff",
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 16,
     }
 });
-
-

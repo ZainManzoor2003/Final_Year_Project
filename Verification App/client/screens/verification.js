@@ -3,12 +3,10 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, TapGestureHandler } from 'react-native-gesture-handler'
 import CreateContextApi from '../ContextApi/CreateContextApi';
-import Button from '../components/button';
 import Footer from '../components/footer';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
-import questions2 from '../assets/questions2';
 
 export default function Verification({ navigation }) {
   const doubleTapRef = useRef(null);
@@ -82,7 +80,7 @@ export default function Verification({ navigation }) {
     if (startVerify) {
       const incrementSessions = async () => {
         try {
-          const res = await axios.post('http://192.168.100.92:3001/incrementSessions', currentUser)
+          const res = await axios.post('https://verification-zeta.vercel.app/incrementSessions', currentUser)
           setCurrentUser(pre => ({ ...pre, totalSessions: res.data.totalSessions }))
         } catch (error) {
           console.log(error.message);
@@ -117,7 +115,7 @@ export default function Verification({ navigation }) {
     videoUri && saveVideo()
   }, [videoUri])
   useEffect(() => {
-    // videoUri && faceRecognize();
+    videoUri && faceRecognize();
 
   }, [videoUri])
 
@@ -131,7 +129,7 @@ export default function Verification({ navigation }) {
     // Function to check the status of a task ID
     const checkTaskStatus = async (id) => {
       try {
-        const response = await axios.get(`https://077f-103-125-177-69.ngrok-free.app/result/${id}`);
+        const response = await axios.get(`https://5bee-111-68-102-12.ngrok-free.app/result/${id}`);
 
         if (response.data) {
           console.log('Response for ID:', id, response.data);
@@ -180,7 +178,7 @@ export default function Verification({ navigation }) {
 
 
     for (let index = 0; index < audioResponse.length; index++) {
-      // const face = faceResponse[index];
+      const face = faceResponse[index];
       const audio = audioResponse[index].id;
       const urduText = audioResponse[index].text;
       // console.log('face', index, face);
@@ -318,7 +316,7 @@ export default function Verification({ navigation }) {
     formData.append('cnic', currentUser.cnic)
 
     try {
-      const response = await axios.post('http://192.168.100.92:3001/upload', formData, {
+      const response = await axios.post('https://verification-zeta.vercel.app/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -372,17 +370,17 @@ export default function Verification({ navigation }) {
       uri: videoUri, // Ensure the file URI is correct and accessible
       name: 'video.mp4', // The file name
       type: 'video/mp4', // The file type
-      value: index == 0 || index == 1 ? randomQuestions[index].value : '-1'
     });
     // for (let [key, value] of formData2.entries()) {
     //   console.log(`${key}:`, value);
     // }
+    formData2.append("action", index == 0 || index == 1 ? randomQuestions[index].value : "-1");
 
 
     try {
       // console.log(videoUri);
       // Send the POST request
-      const response = await axios.post('https://077f-103-125-177-69.ngrok-free.app/process',
+      const response = await axios.post('https://5bee-111-68-102-12.ngrok-free.app/process',
         formData2,
         {
           headers: {

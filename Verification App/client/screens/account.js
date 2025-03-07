@@ -33,14 +33,36 @@ export default function Account({ navigation }) {
             })
         }
     }, [currentUser])
+    const validateFields = () => {
+        if (updateInfo.number.length < 11) {
+            Alert.alert("Number must be 11 digits.");
+            return false;
+        }
+        if (!/[A-Za-z]/.test(updateInfo.address)) {
+            Alert.alert("Only Spaces are not allowed.");
+            return false;
+
+        }
+        if (updateInfo.password.length < 8 || updateInfo.password.length > 13) {
+            Alert.alert("Password must be between 8 to 13  characters.");
+            return false;
+        }
+
+        // Check if password contains only allowed characters and no whitespace
+        if (!/^[a-z0-9@_]+$/.test(updateInfo.password)) {
+            Alert.alert("Password should contain only lowercase letters, digits, '@', '_', and no whitespace.");
+            return false;
+        }
+    }
 
     const handleUpdate = async () => {
-        if (!updateInfo.name || !updateInfo.password || !updateInfo.number || !updateInfo.address || !updateInfo.username) {
+        if (!updateInfo.urduName || !updateInfo.password || !updateInfo.number || !updateInfo.address) {
             Alert.alert('Please fill input fields')
             return
         }
+        if (!validateFields()) return;
         else {
-            await axios.post(`http://192.168.100.92:3001/updateAccount`, updateInfo)
+            await axios.post(`https://verification-zeta.vercel.app/updateAccount`, updateInfo)
                 .then(async (res) => {
                     if (res.data.mes === 'Account updated successfully') {
                         Alert.alert(res.data.mes);
@@ -73,9 +95,12 @@ export default function Account({ navigation }) {
                             placeholder="نام"
                             placeholderTextColor="#7C808D"
                             selectionColor="#3662AA"
-                            maxLength={13}
+                            maxLength={30}
                             value={updateInfo.urduName}
-                            onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, urduName: text }))}
+                            onChangeText={(text) => {
+                                const name = text.replace(/[^ا-ی\s]/g, "");
+                                setUpdateInfo((prev) => ({ ...prev, urduName: name }))
+                            }}
                         />
                     </View>
                     <View style={styles.inputContainer}>
@@ -87,9 +112,12 @@ export default function Account({ navigation }) {
                             placeholder="نمبر"
                             placeholderTextColor="#7C808D"
                             selectionColor="#3662AA"
-                            maxLength={13}
+                            maxLength={11}
                             value={updateInfo.number}
-                            onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, number: text }))}
+                            onChangeText={(text) => {
+                                const value = text.replace(/[^0-9]/g, "");
+                                setUpdateInfo((prev) => ({ ...prev, number: value }))
+                            }}
                         />
                     </View>
                     <View style={styles.inputContainer}>
@@ -101,7 +129,7 @@ export default function Account({ navigation }) {
                             placeholder="پتہ"
                             placeholderTextColor="#7C808D"
                             selectionColor="#3662AA"
-                            maxLength={13}
+                            maxLength={70}
                             value={updateInfo.address}
                             onChangeText={(text) => setUpdateInfo((prev) => ({ ...prev, address: text }))}
                         />
@@ -113,6 +141,7 @@ export default function Account({ navigation }) {
                         <TextInput
                             style={styles.input}
                             placeholder="پاس ورڈ"
+                            maxLength={13}
                             placeholderTextColor="#7C808D"
                             selectionColor="#3662AA"
                             secureTextEntry={true}

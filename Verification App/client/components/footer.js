@@ -19,13 +19,13 @@ export default function Footer() {
                 <Feather name="check-square" style={styles.icon} color={route.name == 'Verification' ? 'orange' :'white'} />
                 <Text style={styles.text}> تصدیق کریں</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('About')}>
-                <Feather name="info" style={styles.icon} color={route.name == 'About' ? 'orange' :'white'} />
-                <Text style={styles.text}>اباؤٹ</Text>
-            </TouchableOpacity> */}
             <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('Account')}>
                 <Feather name="user" style={styles.icon} color={route.name == 'Account' ? 'orange' :'white'} />
                 <Text style={styles.text}>اکاؤنٹ</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn} onPress={() => !startVerify && navigation.navigate('Login')}>
+                <Feather name="log-out" style={styles.icon} color={route.name == 'About' ? 'orange' :'white'} />
+                <Text style={styles.text}>لاگ آؤٹ</Text>
             </TouchableOpacity>
         </View>
     )
