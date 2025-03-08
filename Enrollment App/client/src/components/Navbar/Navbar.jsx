@@ -41,7 +41,7 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     if (!show) return null;
 
     const validateFields = () => {
-        const { name, password, number, address } = adminInfo;
+        const { name, password, number, address } = admin;
 
         if (!name) {
             alert("Name is required.");
@@ -109,7 +109,6 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
                     value={admin.name}
                     onChange={(e) => {
                         const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                        value = value.trimStart();
                         setAdmin(prev => ({ ...prev, name: value }))
                     }}
                     maxLength={30}
