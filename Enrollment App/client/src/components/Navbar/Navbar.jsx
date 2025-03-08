@@ -47,7 +47,7 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
             alert("Name is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(name)){
+        if (!/[A-Za-z]/.test(name)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -64,13 +64,17 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
             alert("Address is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(address)){
+        if (!/[A-Za-z]/.test(address)) {
             alert("Only Spaces are not allowed.");
             return false;
 
         }
         if (!password) {
             alert("Password is required.");
+            return false;
+        }
+        if (password.length < 8 || password.length > 13) {
+            alert("Password must be between 8 to 13  characters.");
             return false;
         }
         // Check if password contains only allowed characters and no whitespace
