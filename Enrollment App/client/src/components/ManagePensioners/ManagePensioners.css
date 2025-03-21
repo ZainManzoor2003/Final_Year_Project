@@ -257,6 +257,12 @@ tr:nth-child(even) {
   justify-content: center;
   align-items: center;
 }
+.modal-wrapper {
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 5px;
+}
 
 .modal-content {
   background: white;
