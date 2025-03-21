@@ -47,9 +47,13 @@ router.get('/getPensioners', connection.getPensioners)
 
 router.get('/getAccountInfo/:id', connection.getAccountInfo)
 
+router.get('/verify-token', connection.isLoggedIn)
+
 
 // ********* Post Requests *********
 router.post('/login', connection.login)
+
+router.post('/logout', connection.logout);
 
 router.post("/upload", upload.single("video"), (req, res) => {
     try {

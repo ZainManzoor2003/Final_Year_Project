@@ -30,8 +30,34 @@ export default function EnableDisablePensioner() {
     const [page, setPage] = useState(0);  // Current page index
     const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
 
+     useEffect(() => {
+            const checkAuthToken = async () => {
+                try {
+                    // Check if the authToken is available (from cookies or local storage)
+                    const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
+                        withCredentials: true,
+                    });
+    
+                    if (response.data.isAuthenticated) {
+                        if (response.data.role === 'admin') {
+                            // If the token is valid, redirect the user
+                            navigate(`/en-dis-pensioners/${response.data.userId}`);
+                        }
+                        else {
+                            navigate(`/manage-pensioners/${response.data.userId}`);
+                        }
+                    }
+                } catch (error) {
+                    console.log('User is not authenticated or token is invalid.');
+                    navigate('/')
+                }
+            };
+    
+            checkAuthToken();
+        }, []);
+
     const getPensioners = async () => {
-        let data = await fetch(`https://fyp-enrollment-server-ruddy.vercel.app/getPensioners`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
         setTempAllPensioners(res)
@@ -79,7 +105,7 @@ export default function EnableDisablePensioner() {
     };
     const enableDisablePensioner = async (pensioner) => {
         try {
-            await axios.post('https://fyp-enrollment-server-ruddy.vercel.app/enableDisablePensioner', pensioner)
+            await axios.post('https://fyp-enrollment-server.vercel.app/enableDisablePensioner', pensioner)
                 .then((res) => {
                     if (res.data.message === 'Successfull') {
                         getPensioners()

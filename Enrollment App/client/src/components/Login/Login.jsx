@@ -53,37 +53,64 @@ export default function Login() {
 
         return true;
     };
+
+    useEffect(() => {
+        const checkAuthToken = async () => {
+            try {
+                // Check if the authToken is available (from cookies or local storage)
+                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
+                    withCredentials: true,
+                });
+
+                if (response.data.isAuthenticated) {
+                    if (response.data.role === 'admin') {
+                        // If the token is valid, redirect the user
+                        navigate(`/manage-operators/${response.data.userId}`);
+                    }
+                    else {
+                        navigate(`/manage-pensioners/${response.data.userId}`);
+                    }
+                }
+            } catch (error) {
+                console.log('User is not authenticated or token is invalid.');
+            }
+        };
+
+        checkAuthToken();
+    }, []);
+
     const login = async () => {
         if (!validateFields()) return;
         else {
             setLoading(true)
-            await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/login`, user).then((res) => {
-                // setLoading(!loading)
-                if (res.data.mes === 'Login Successfull') {
-                    toast.success(res.data.mes, {
-                        autoClose: 1000
-                    })
-                    // var date = new Date();
-                    // date.setTime(date.getTime() + (30 * 1000));
-                    // Cookies.set(`token${res.data.user._id}`, res.data.token,{expires:1})
-                    setTimeout(() => {
-                        if (res.data.user.role === 'admin') {
-                            setAdminInfo(res.data.user)
-                            navigate(`/manage-operators/${res.data.user._id}`);
-                        }
-                        else {
-                            setOperatorInfo(res.data.user)
-                            navigate(`/manage-pensioners/${res.data.user._id}`);
-                        }
-                    }, 1000);
-                    setUser({})
-                }
-                else {
-                    toast.error(res.data.mes, {
-                        autoClose: 1000
-                    })
-                }
-            })
+            await axios.post(`https://fyp-enrollment-server.vercel.app/login`, user,
+                { withCredentials: true }).then((res) => {
+                    // setLoading(!loading)
+                    if (res.data.mes === 'Login Successfull') {
+                        toast.success(res.data.mes, {
+                            autoClose: 1000
+                        })
+                        // var date = new Date();
+                        // date.setTime(date.getTime() + (30 * 1000));
+                        // Cookies.set(`token${res.data.user._id}`, res.data.token,{expires:1})
+                        setTimeout(() => {
+                            if (res.data.user.role === 'admin') {
+                                setAdminInfo(res.data.user)
+                                navigate(`/manage-operators/${res.data.user._id}`);
+                            }
+                            else {
+                                setOperatorInfo(res.data.user)
+                                navigate(`/manage-pensioners/${res.data.user._id}`);
+                            }
+                        }, 1000);
+                        setUser({})
+                    }
+                    else {
+                        toast.error(res.data.mes, {
+                            autoClose: 1000
+                        })
+                    }
+                })
             setLoading(false)
         }
 
@@ -101,7 +128,7 @@ export default function Login() {
                     </div>
                     <div className="password">
                         <div className="icon"> <RiLockPasswordFill /></div>
-                        <input type="text" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
+                        <input type="password" name="password" id="" placeholder='Password' onChange={(e) => { handleChange(e) }} />
                     </div>
                     <button disabled={loading} className='submit-btn' onClick={() => login()}>Log In</button>
                 </div>

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express')
 const bodyParser = require('body-parser');
+const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const connection = require('./db')
 const router = require('./routers/router')
@@ -13,6 +14,7 @@ const corsOptions = {
 };
 app.use(express.json())
 app.use(bodyParser.json());
+app.use(cookieParser())
 app.use(cors(corsOptions));
 app.use('/', router);
 const port = 3001;
@@ -24,4 +26,3 @@ connection().then(() => {
     });
 
 })
-

@@ -50,7 +50,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
             alert("Name is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(name)){
+        if (!/[A-Za-z]/.test(name)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -67,7 +67,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
             alert("Address is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(address)){
+        if (!/[A-Za-z]/.test(address)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -96,7 +96,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/updateOperator`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updateOperator`, currentOperator)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -129,7 +129,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
                     onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
                     maxLength={13}
                 />
-                <label>Number:*</label>
+                <label>Contact Number:*</label>
                 <input
                     type="text"
                     value={currentOperator.number}
@@ -209,7 +209,7 @@ const AddModal = ({ show, onClose }) => {
             alert("Name is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(name)){
+        if (!/[A-Za-z]/.test(name)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -238,7 +238,7 @@ const AddModal = ({ show, onClose }) => {
             alert("Address is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(address)){
+        if (!/[A-Za-z]/.test(address)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -259,7 +259,7 @@ const AddModal = ({ show, onClose }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/addOperator`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/addOperator`, currentOperator)
                 .then((res) => {
                     alert(res.data.mes);
                     onClose()
@@ -309,7 +309,7 @@ const AddModal = ({ show, onClose }) => {
                     readOnly // Password is auto-generated and cannot be changed
                 />
 
-                <label>Number:*</label>
+                <label>Contact Number:*</label>
                 <input
                     type="text"
                     value={currentOperator.number || ''}
@@ -359,9 +359,36 @@ export default function ManageOperators() {
     const [operator, setOperator] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
+    useEffect(() => {
+        const checkAuthToken = async () => {
+            try {
+                // Check if the authToken is available (from cookies or local storage)
+                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
+                    withCredentials: true,
+                });
+                console.log('isStynticate',response.data.isAuthenticated);
+                
+
+                if (response.data.isAuthenticated) {
+                    if (response.data.role === 'admin') {
+                        // If the token is valid, redirect the user
+                        navigate(`/manage-operators/${response.data.userId}`);
+                    }
+                    else {
+                        navigate(`/manage-pensioners/${response.data.userId}`);
+                    }
+                }
+            } catch (error) {
+                console.log('User is not authenticated or token is invalid.');
+                navigate('/')
+            }
+        };
+
+        checkAuthToken();
+    }, []);
 
     const getOperators = async () => {
-        let data = await fetch(`https://fyp-enrollment-server-ruddy.vercel.app/getOperators`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getOperators`);
         let res = await data.json();
         setAllOperators(res);
         setTempAllOperators(res)
@@ -376,7 +403,7 @@ export default function ManageOperators() {
 
     const enableDisableOperator = async (operator) => {
         try {
-            await axios.post('https://fyp-enrollment-server-ruddy.vercel.app/enableDisableOperator', operator)
+            await axios.post('https://fyp-enrollment-server.vercel.app/enableDisableOperator', operator)
                 .then((res) => {
                     if (res.data.message === 'Successfull') {
                         getOperators()

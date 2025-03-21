@@ -15,6 +15,8 @@ import * as React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import CreateContextApi from '../../ContextApi/CreateContextApi';
 import axios from 'axios';
+import Cookies from "js-cookie";
+
 
 
 const pages = ['Manage Operators', 'Enable-Disable Pensioner'];
@@ -91,7 +93,7 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/updateOperator`, admin)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updateOperator`, admin)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -188,9 +190,17 @@ function Navbar() {
     }
 
     const getAccountInfo = async () => {
-        let data = await fetch(`https://fyp-enrollment-server-ruddy.vercel.app/getAccountInfo/${id}`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getAccountInfo/${id}`);
         let res = await data.json();
         setAdminInfo(res);
+    }
+    const handleLogout = async () => {
+        try {
+            await axios.post("https://fyp-enrollment-server.vercel.app/logout", {}, { withCredentials: true });
+            navigate('/')
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     }
 
     React.useEffect(() => {
@@ -328,7 +338,7 @@ function Navbar() {
                                 <MenuItem key={'account'} onClick={handleAccountClick}>
                                     <Typography sx={{ textAlign: 'center' }}>Account</Typography>
                                 </MenuItem>
-                                <MenuItem key={'logout'} onClick={handleCloseUserMenu}>
+                                <MenuItem key={'logout'} onClick={handleLogout}>
                                     <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
                                 </MenuItem>
                             </Menu>

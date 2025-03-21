@@ -2,26 +2,31 @@ const PensionerModel = require('../models/pensionerSchema')
 const VideoModel = require('../models/videoSchema')
 const UserModel = require('../models/userSchema')
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 
 const connection = (req, res) => {
     res.send('Hello')
 }
 
 const isLoggedIn = (req, res, next) => {
+
+    const token = req.cookies.authToken; // Assuming you're storing the token in a cookie
+
     if (!token) {
-        res.send({ mes: 'Token Missing' })
+        return res.status(401).send({ isAuthenticated: false });
     }
-    else {
-        jwt.verify(token, process.env.JWT_SECRETKEY, (err, decoded) => {
-            if (err) {
-                res.send({ mes: 'Error with token' })
-            }
-            else {
-                next();
-                // console.log(decoded);
-            }
-        })
+
+    try {
+        const decoded = jwt.verify(token, 'app'); // Replace 'app' with your secret
+
+        res.send({ isAuthenticated: true, userId: decoded.id, role: decoded.role });
+    } catch (error) {
+        res.status(401).send({ isAuthenticated: false });
     }
+}
+const logout = (req, res) => {
+    res.clearCookie('authToken', { path: '/' });
+    res.status(200).json({ message: "Logged out successfully!" });
 }
 const login = async (req, res) => {
     let { email, password } = req.body
@@ -30,13 +35,18 @@ const login = async (req, res) => {
         if (user) {
             if (user.password == password) {
                 if (user.enable == true) {
-                    // const tokenData = {
-                    //     email: user.email,
-                    //     id: user._id
-                    // }
-                    // const token = jwt.sign(tokenData, process.env.JWT_SECRETKEY, {
-                    //     expiresIn: '1d'
-                    // });
+                    const tokenData = {
+                        role: user.role,
+                        id: user._id
+                    }
+                    const token = jwt.sign(tokenData, 'app', {
+                        expiresIn: '1d'
+                    });
+                    res.cookie('authToken', token, {
+                        httpOnly: true, // Helps prevent XSS attacks
+                        secure: true, // Ensures the cookie is only sent over HTTPS (use false for development)
+                        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+                    });
 
                     res.send({ mes: 'Login Successfull', user })
                 }
@@ -255,7 +265,7 @@ const updatePensioner = async (req, res) => {
         // username = username.replace(/\s+/g, '');
         // number = number.replace(/\s+/g, '');
         // pensionBank = number.replace(/\s+/g, '');
-        // city = number.replace(/\s+/g, '');
+        // city = number.replace(/\s+/g, '');        
 
         const pensioner = await PensionerModel.updateOne({ _id: req.body._id }, {
             name, username, number, password,
@@ -307,5 +317,5 @@ const enableDisableOperator = async (req, res) => {
 
 module.exports = {
     connection, isLoggedIn, login, addPensioner, addOperator, upload, getOperators, getPensioners, getAccountInfo, updateOperator,
-    updatePensioner, enableDisablePensioner, enableDisableOperator
+    updatePensioner, enableDisablePensioner, enableDisableOperator, logout
 }
