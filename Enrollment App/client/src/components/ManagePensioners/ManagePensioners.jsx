@@ -63,7 +63,7 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             alert("Name is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(name)){
+        if (!/[A-Za-z]/.test(name)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -80,7 +80,7 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
             alert("Address is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(address)){
+        if (!/[A-Za-z]/.test(address)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -128,7 +128,7 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/updatePensioner`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updatePensioner`, currentOperator)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -141,119 +141,121 @@ const UpdateModal = ({ show, onClose, pensioner }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content">
-                <span className="close-icon" onClick={onClose}>&times;</span>
-                <h2>Update Pensioner</h2>
-                <label>Name:*</label>
-                <input
-                    type="text"
-                    value={currentOperator.name}
-                    onChange={(e) => {
-                        const name = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                        setCurrentOperator(prev => ({ ...prev, name: name }))
-                    }}
-                    maxLength={30}
-                />
-                <label className='urduLabel'>*:نام</label>
-                <input
-                    type="text"
-                    value={currentOperator.urduName || ''}
-                    onChange={(e) => {
-                        const value = e.target.value.replace(/[^ا-ی\s]/g, "");
-                        setCurrentOperator(pre => ({ ...pre, urduName: value }))
-                    }}
-                    maxLength={30}
-                    className='urduInput'
-                />
-                <label>Password:*</label>
-                <input
-                    type="password"
-                    value={currentOperator.password}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
-                    maxLength={13}
-                />
-                <label>City:*</label>
-                <select
-                    value={currentOperator.city}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, city: e.target.value }))}
-                >
-                    <option value="">Select a City</option>
-                    {cities.map((city, index) => (
-                        <option key={index} value={city}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
-                <label className='urduLabel'>*:شہر</label>
-                <select
-                    value={currentOperator.urduCity}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduCity: e.target.value }))}
-                    style={{ textAlign: 'right' }}
+            <div className="modal-wrapper">
+                <div className="modal-content">
+                    <span className="close-icon" onClick={onClose}>&times;</span>
+                    <h2>Update Pensioner</h2>
+                    <label>Name:*</label>
+                    <input
+                        type="text"
+                        value={currentOperator.name}
+                        onChange={(e) => {
+                            const name = e.target.value.replace(/[^A-Za-z\s]/g, "");
+                            setCurrentOperator(prev => ({ ...prev, name: name }))
+                        }}
+                        maxLength={30}
+                    />
+                    <label className='urduLabel'>*:نام</label>
+                    <input
+                        type="text"
+                        value={currentOperator.urduName || ''}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^ا-ی\s]/g, "");
+                            setCurrentOperator(pre => ({ ...pre, urduName: value }))
+                        }}
+                        maxLength={30}
+                        className='urduInput'
+                    />
+                    <label>Password:*</label>
+                    <input
+                        type="password"
+                        value={currentOperator.password}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, password: e.target.value }))}
+                        maxLength={13}
+                    />
+                    <label>City:*</label>
+                    <select
+                        value={currentOperator.city}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, city: e.target.value }))}
+                    >
+                        <option value="">Select a City</option>
+                        {cities.map((city, index) => (
+                            <option key={index} value={city}>
+                                {city}
+                            </option>
+                        ))}
+                    </select>
+                    <label className='urduLabel'>*:شہر</label>
+                    <select
+                        value={currentOperator.urduCity}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduCity: e.target.value }))}
+                        style={{ textAlign: 'right' }}
 
-                >
-                    <option value="">شہر منتخب کریں</option>
-                    {citiesUrdu.map((city, index) => (
-                        <option key={index} value={city}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
-                <label>Pension Bank:*</label>
-                <select
-                    value={currentOperator.pensionBank}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, pensionBank: e.target.value }))}
-                >
-                    <option value="">Select a Bank</option>
-                    {pakistanBanksEnglish.map((bank, index) => (
-                        <option key={index} value={bank}>
-                            {bank}
-                        </option>
-                    ))}
-                </select>
-                <label className='urduLabel'>*:پنشن بینک</label>
-                <select
-                    value={currentOperator.urduPensionBank}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduPensionBank: e.target.value }))}
-                    style={{ textAlign: 'right' }}
+                    >
+                        <option value="">شہر منتخب کریں</option>
+                        {citiesUrdu.map((city, index) => (
+                            <option key={index} value={city}>
+                                {city}
+                            </option>
+                        ))}
+                    </select>
+                    <label>Pension Bank:*</label>
+                    <select
+                        value={currentOperator.pensionBank}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, pensionBank: e.target.value }))}
+                    >
+                        <option value="">Select a Bank</option>
+                        {pakistanBanksEnglish.map((bank, index) => (
+                            <option key={index} value={bank}>
+                                {bank}
+                            </option>
+                        ))}
+                    </select>
+                    <label className='urduLabel'>*:پنشن بینک</label>
+                    <select
+                        value={currentOperator.urduPensionBank}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, urduPensionBank: e.target.value }))}
+                        style={{ textAlign: 'right' }}
 
-                >
-                    <option value="">بینک منتخب کریں</option>
-                    {pakistanBanksUrdu.map((bank, index) => (
-                        <option key={index} value={bank}>
-                            {bank}
-                        </option>
-                    ))}
-                </select>
-                <label>Number:*</label>
-                <input
-                    type="text"
-                    value={currentOperator.number}
-                    onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, "");
-                        setCurrentOperator(prev => ({ ...prev, number: value }))
-                    }}
-                    maxLength={11}
-                />
-                <label>Address:*</label>
-                <input
-                    type="text"
-                    value={currentOperator.address}
-                    onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
-                    maxLength={70}
-                />
-                <label>CNIC:</label>
-                <input
-                    type="text"
-                    value={currentOperator.cnic}
-                    disabled
-                />
-                <label>Email:</label>
-                <input
-                    type="text"
-                    value={currentOperator.email}
-                    disabled
-                />
-                <button onClick={handleSubmit}>Update</button>
+                    >
+                        <option value="">بینک منتخب کریں</option>
+                        {pakistanBanksUrdu.map((bank, index) => (
+                            <option key={index} value={bank}>
+                                {bank}
+                            </option>
+                        ))}
+                    </select>
+                    <label>Contact Number:*</label>
+                    <input
+                        type="text"
+                        value={currentOperator.number}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setCurrentOperator(prev => ({ ...prev, number: value }))
+                        }}
+                        maxLength={11}
+                    />
+                    <label>Address:*</label>
+                    <input
+                        type="text"
+                        value={currentOperator.address}
+                        onChange={(e) => setCurrentOperator(prev => ({ ...prev, address: e.target.value }))}
+                        maxLength={70}
+                    />
+                    <label>CNIC:</label>
+                    <input
+                        type="text"
+                        value={currentOperator.cnic}
+                        disabled
+                    />
+                    <label>Email:</label>
+                    <input
+                        type="text"
+                        value={currentOperator.email}
+                        disabled
+                    />
+                    <button onClick={handleSubmit}>Update</button>
+                </div>
             </div>
         </div>
     );
@@ -444,7 +446,7 @@ const Verification = ({ show, onClose }) => {
                     formData.append("video", blob, `${currentPensionerData.cnic}` + '_' + `${index + 1}` + '.mp4');
 
                     try {
-                        const response = await axios.post("https://fyp-enrollment-server-ruddy.vercel.app/upload", formData, {
+                        const response = await axios.post("https://fyp-enrollment-server.vercel.app/upload", formData, {
                             headers: {
                                 "Content-Type": "multipart/form-data"
                             }
@@ -579,7 +581,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
             alert("Name is required.");
             return false;
         }
-        if(!/[A-Za-z]/.test(name)){
+        if (!/[A-Za-z]/.test(name)) {
             alert("Only Spaces are not allowed.");
             return false;
 
@@ -645,7 +647,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
         if (!validateFields()) return;
 
         try {
-            const response = await axios.post(`https://fyp-enrollment-server-ruddy.vercel.app/addPensioner`, currentPensioner);
+            const response = await axios.post(`https://fyp-enrollment-server.vercel.app/addPensioner`, currentPensioner);
             alert(response.data.mes);
             onClose();
 
@@ -661,128 +663,130 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content">
-                <span className="close-icon" onClick={onClose}>&times;</span>
-                <h2>Add Pensioner</h2>
-                <label>Name:*</label>
-                <input
-                    type="text"
-                    value={currentPensioner.name || ''}
-                    onChange={handleNameChange}
-                    maxLength={30}
-                />
-                <label className='urduLabel'>*:نام</label>
-                <input
-                    type="text"
-                    value={currentPensioner.urduName || ''}
-                    onChange={(e) => {
-                        const value = e.target.value.replace(/[^ا-ی\s]/g, "");
-                        setCurrentPensioner(pre => ({ ...pre, urduName: value }))
-                    }}
-                    maxLength={30}
-                    className='urduInput'
-                />
+            <div className="modal-wrapper">
+                <div className="modal-content">
+                    <span className="close-icon" onClick={onClose}>&times;</span>
+                    <h2>Add Pensioner</h2>
+                    <label>Name:*</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.name || ''}
+                        onChange={handleNameChange}
+                        maxLength={30}
+                    />
+                    <label className='urduLabel'>*:نام</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.urduName || ''}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^ا-ی\s]/g, "");
+                            setCurrentPensioner(pre => ({ ...pre, urduName: value }))
+                        }}
+                        maxLength={30}
+                        className='urduInput'
+                    />
 
 
-                <label>CNIC:*</label>
-                <input
-                    type="text"
-                    value={currentPensioner.cnic || ''}
-                    maxLength={13}
-                    onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, "");
-                        setCurrentPensioner(prev => ({ ...prev, cnic: value }));
-                        setCurrentPensionerData({ cnic: value });
-                    }}
-                />
-                <label>City:*</label>
-                <select
-                    value={currentPensioner.city || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
-                >
-                    <option value="">Select a City</option>
-                    {cities.map((city, index) => (
-                        <option key={index} value={city}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
-                <label className='urduLabel'>*:شہر</label>
-                <select
-                    value={currentPensioner.urduCity || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduCity: e.target.value }))}
-                    style={{ textAlign: 'right' }}
+                    <label>CNIC:*</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.cnic || ''}
+                        maxLength={13}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setCurrentPensioner(prev => ({ ...prev, cnic: value }));
+                            setCurrentPensionerData({ cnic: value });
+                        }}
+                    />
+                    <label>City:*</label>
+                    <select
+                        value={currentPensioner.city || ''}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, city: e.target.value }))}
+                    >
+                        <option value="">Select a City</option>
+                        {cities.map((city, index) => (
+                            <option key={index} value={city}>
+                                {city}
+                            </option>
+                        ))}
+                    </select>
+                    <label className='urduLabel'>*:شہر</label>
+                    <select
+                        value={currentPensioner.urduCity || ''}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduCity: e.target.value }))}
+                        style={{ textAlign: 'right' }}
 
-                >
-                    <option value="">شہر منتخب کریں</option>
-                    {citiesUrdu.map((city, index) => (
-                        <option key={index} value={city}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
+                    >
+                        <option value="">شہر منتخب کریں</option>
+                        {citiesUrdu.map((city, index) => (
+                            <option key={index} value={city}>
+                                {city}
+                            </option>
+                        ))}
+                    </select>
 
-                <label>Email:*</label>
-                <input
-                    type="text"
-                    value={currentPensioner.email || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, email: e.target.value }))}
-                    maxLength={40}
-                />
+                    <label>Email:*</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.email || ''}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, email: e.target.value }))}
+                        maxLength={40}
+                    />
 
-                <label>Number:*</label>
-                <input
-                    type="text"
-                    value={currentPensioner.number || ''}
-                    maxLength={11}
-                    onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, "");
-                        setCurrentPensioner(prev => ({ ...prev, number: value }))
-                    }}
-                />
+                    <label>Contact Number:*</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.number || ''}
+                        maxLength={11}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setCurrentPensioner(prev => ({ ...prev, number: value }))
+                        }}
+                    />
 
-                <label>Address:*</label>
-                <input
-                    type="text"
-                    value={currentPensioner.address || ''}
-                    maxLength={70}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
-                />
-                <label>Pension Bank:*</label>
-                <select
-                    value={currentPensioner.pensionBank || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, pensionBank: e.target.value }))}
-                >
-                    <option value="">Select a Bank</option>
-                    {pakistanBanksEnglish.map((bank, index) => (
-                        <option key={index} value={bank}>
-                            {bank}
-                        </option>
-                    ))}
-                </select>
-                <label className='urduLabel'>*:پنشن بینک</label>
-                <select
-                    value={currentPensioner.urduPensionBank || ''}
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduPensionBank: e.target.value }))}
-                    style={{ textAlign: 'right' }}
+                    <label>Address:*</label>
+                    <input
+                        type="text"
+                        value={currentPensioner.address || ''}
+                        maxLength={70}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, address: e.target.value }))}
+                    />
+                    <label>Pension Bank:*</label>
+                    <select
+                        value={currentPensioner.pensionBank || ''}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, pensionBank: e.target.value }))}
+                    >
+                        <option value="">Select a Bank</option>
+                        {pakistanBanksEnglish.map((bank, index) => (
+                            <option key={index} value={bank}>
+                                {bank}
+                            </option>
+                        ))}
+                    </select>
+                    <label className='urduLabel'>*:پنشن بینک</label>
+                    <select
+                        value={currentPensioner.urduPensionBank || ''}
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, urduPensionBank: e.target.value }))}
+                        style={{ textAlign: 'right' }}
 
-                >
-                    <option value="">بینک منتخب کریں</option>
-                    {pakistanBanksUrdu.map((bank, index) => (
-                        <option key={index} value={bank}>
-                            {bank}
-                        </option>
-                    ))}
-                </select>
-                <label>Date of Birth:*</label>
-                <input
-                    type="date"
-                    value={currentPensioner.dob || ''}
-                    max={new Date().toISOString().split('T')[0]} // Set max date to today
-                    onChange={(e) => setCurrentPensioner(prev => ({ ...prev, dob: e.target.value }))}
-                />
+                    >
+                        <option value="">بینک منتخب کریں</option>
+                        {pakistanBanksUrdu.map((bank, index) => (
+                            <option key={index} value={bank}>
+                                {bank}
+                            </option>
+                        ))}
+                    </select>
+                    <label>Date of Birth:*</label>
+                    <input
+                        type="date"
+                        value={currentPensioner.dob || ''}
+                        max={new Date().toISOString().split('T')[0]} // Set max date to today
+                        onChange={(e) => setCurrentPensioner(prev => ({ ...prev, dob: e.target.value }))}
+                    />
 
-                <button onClick={handleSubmit}>Add</button>
+                    <button onClick={handleSubmit}>Add</button>
+                </div>
             </div>
         </div>
     );
@@ -809,8 +813,35 @@ export default function ManagePensioners() {
     const [showVerificationModal, setShowVerificationModal] = useState(false);
     const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
 
+    useEffect(() => {
+        const checkAuthToken = async () => {
+            try {
+                // Check if the authToken is available (from cookies or local storage)
+                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
+                    withCredentials: true,
+                });
+
+                if (response.data.isAuthenticated) {
+                    
+                    if (response.data.role === 'admin') {
+                        // If the token is valid, redirect the user
+                        navigate(`/manage-operators/${response.data.userId}`);
+                    }
+                    else {
+                        navigate(`/manage-pensioners/${response.data.userId}`);
+                    }
+                }
+            } catch (error) {
+                console.log('User is not authenticated or token is invalid.');
+                navigate('/')
+            }
+        };
+
+        checkAuthToken();
+    }, []);
+
     const getPensioners = async () => {
-        let data = await fetch(`https://fyp-enrollment-server-ruddy.vercel.app/getPensioners`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
         setTempAllPensioners(res)
@@ -860,8 +891,8 @@ export default function ManagePensioners() {
     }
     const handleCityChange = (event) => {
         setSearchCity(event.target.value)
-        console.log('direct select',event.target.value);
-        
+        console.log('direct select', event.target.value);
+
         setPage(0)
         if (event.target.value) {
             setTempAllPensioners(allPensioners.filter((pensioner) =>
