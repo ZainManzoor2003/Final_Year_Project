@@ -6,6 +6,7 @@ import {
 }
     from '@mui/material'
 import Table from '@mui/material/Table';
+import { useNavigate } from 'react-router-dom';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
@@ -22,6 +23,7 @@ const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 export default function EnableDisablePensioner() {
     const [allPensioners, setAllPensioners] = useState([]);
+    const navigate = useNavigate();
     const [filterText, setFilterText] = useState("")
     const [filterName, setFilterName] = useState("")
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -173,6 +175,6 @@ export default function EnableDisablePensioner() {
                 </Card>
             </Box>
         </>
-        :<>{navigate('/')}</>
+         : <>{navigate('/')}</>
     )
 }
