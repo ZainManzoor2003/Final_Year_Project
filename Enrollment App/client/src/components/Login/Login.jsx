@@ -8,9 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios'
 import CreateContextApi from '../../ContextApi/CreateContextApi';
 
+
 export default function Login() {
     const navigate = useNavigate();
-    const { adminInfo, setAdminInfo, operatorInfo, setOperatorInfo } = useContext(CreateContextApi)
+    const { setAdminInfo, setOperatorInfo, setIsAuthenticated } = useContext(CreateContextApi)
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState({
         email: '',
@@ -57,8 +58,10 @@ export default function Login() {
     useEffect(() => {
         const checkAuthToken = async () => {
             try {
+                const token = localStorage.getItem('authToken');
+                
                 // Check if the authToken is available (from cookies or local storage)
-                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
+                const response = await axios.post('https://fyp-enrollment-server.vercel.app/verify-token', {token:token}, {
                     withCredentials: true,
                 });
 
@@ -95,15 +98,19 @@ export default function Login() {
                         // Cookies.set(`token${res.data.user._id}`, res.data.token,{expires:1})
                         setTimeout(() => {
                             if (res.data.user.role === 'admin') {
+                                setIsAuthenticated('admin')
                                 setAdminInfo(res.data.user)
                                 navigate(`/manage-operators/${res.data.user._id}`);
                             }
                             else {
+                                setIsAuthenticated('operator')
                                 setOperatorInfo(res.data.user)
                                 navigate(`/manage-pensioners/${res.data.user._id}`);
                             }
                         }, 1000);
                         setUser({})
+                        localStorage.setItem('authToken', res.data.token)
+                        localStorage.setItem('role', res.data.user.role)
                     }
                     else {
                         toast.error(res.data.mes, {

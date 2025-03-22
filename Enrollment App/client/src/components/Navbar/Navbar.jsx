@@ -168,7 +168,7 @@ function Navbar() {
     const navigate = useNavigate()
     const { id } = useParams()
     const [showAccountModal, setShowAccountModal] = React.useState(false);
-    const { adminInfo, setAdminInfo } = React.useContext(CreateContextApi)
+    const { adminInfo, setAdminInfo, setIsAuthenticated } = React.useContext(CreateContextApi)
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -195,12 +195,19 @@ function Navbar() {
         setAdminInfo(res);
     }
     const handleLogout = async () => {
-        try {
-            await axios.post("https://fyp-enrollment-server.vercel.app/logout", {}, { withCredentials: true });
-            navigate('/')
-        } catch (error) {
-            console.error("Logout failed:", error);
-        }
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('role')
+        setIsAuthenticated('')
+        navigate('/')
+        // try {
+        //     await axios.post("https://fyp-enrollment-server.vercel.app/logout", {}, { withCredentials: true });
+        //     setIsAdminAuthenticated(false)
+        //     setIsOperatorAuthenticated(false)
+        //     navigate('/')
+        // } catch (error) {
+        //     console.error("Logout failed:", error);
+        // }
+
     }
 
     React.useEffect(() => {

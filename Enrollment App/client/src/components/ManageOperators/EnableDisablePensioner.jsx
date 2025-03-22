@@ -22,39 +22,14 @@ const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
 export default function EnableDisablePensioner() {
     const [allPensioners, setAllPensioners] = useState([]);
-    const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
     const [filterText, setFilterText] = useState("")
     const [filterName, setFilterName] = useState("")
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [tempAllPensioners, setTempAllPensioners] = useState([]);
     const [page, setPage] = useState(0);  // Current page index
     const [rowsPerPage, setRowsPerPage] = useState(5);  // Number of rows per page
-
-     useEffect(() => {
-            const checkAuthToken = async () => {
-                try {
-                    // Check if the authToken is available (from cookies or local storage)
-                    const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
-                        withCredentials: true,
-                    });
+    const { isAuthenticated } = useContext(CreateContextApi);
     
-                    if (response.data.isAuthenticated) {
-                        if (response.data.role === 'admin') {
-                            // If the token is valid, redirect the user
-                            navigate(`/en-dis-pensioners/${response.data.userId}`);
-                        }
-                        else {
-                            navigate(`/manage-pensioners/${response.data.userId}`);
-                        }
-                    }
-                } catch (error) {
-                    console.log('User is not authenticated or token is invalid.');
-                    navigate('/')
-                }
-            };
-    
-            checkAuthToken();
-        }, []);
 
     const getPensioners = async () => {
         let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
@@ -117,6 +92,7 @@ export default function EnableDisablePensioner() {
         }
     }
     return (
+        isAuthenticated && isAuthenticated=='admin' ?
         <>
             <Box
                 display="flex"
@@ -197,5 +173,6 @@ export default function EnableDisablePensioner() {
                 </Card>
             </Box>
         </>
+        :<>{navigate('/')}</>
     )
 }

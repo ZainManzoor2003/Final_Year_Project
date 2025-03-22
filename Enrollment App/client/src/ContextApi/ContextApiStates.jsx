@@ -11,6 +11,7 @@ export default function ContextApiStates(props) {
   const [startVerify, setStartVerify] = useState(false);
   const [randomQuestions, setRandomQuestions] = useState([]);
   const [previousNumbers, setPreviousNumbers] = useState(new Set());
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('role'));
 
   function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -87,6 +88,7 @@ export default function ContextApiStates(props) {
   return (
     <>
       <CreateContextApi.Provider value={{
+        isAuthenticated, setIsAuthenticated,
         currentPensionerData, setCurrentPensionerData,
         adminInfo, setAdminInfo, operatorInfo, setOperatorInfo
         , playSound, randomQuestions, startVerify, setStartVerify, setQuestions

@@ -47,11 +47,10 @@ router.get('/getPensioners', connection.getPensioners)
 
 router.get('/getAccountInfo/:id', connection.getAccountInfo)
 
-router.get('/verify-token', connection.isLoggedIn)
-
-
 // ********* Post Requests *********
 router.post('/login', connection.login)
+
+router.post('/verify-token', connection.isLoggedIn)
 
 router.post('/logout', connection.logout);
 

@@ -10,7 +10,9 @@ const connection = (req, res) => {
 
 const isLoggedIn = (req, res, next) => {
 
-    const token = req.cookies.authToken; // Assuming you're storing the token in a cookie
+    const token = req.body.token; // Assuming you're storing the token in a cookie
+
+    
 
     if (!token) {
         return res.status(401).send({ isAuthenticated: false });
@@ -25,7 +27,8 @@ const isLoggedIn = (req, res, next) => {
     }
 }
 const logout = (req, res) => {
-    res.clearCookie('authToken', { path: '/' });
+    res.clearCookie('authToken', { path: '/' });    
+    res.clearCookie('role', { path: '/' });    
     res.status(200).json({ message: "Logged out successfully!" });
 }
 const login = async (req, res) => {
@@ -42,13 +45,20 @@ const login = async (req, res) => {
                     const token = jwt.sign(tokenData, 'app', {
                         expiresIn: '1d'
                     });
-                    res.cookie('authToken', token, {
-                        httpOnly: true, // Helps prevent XSS attacks
-                        secure: true, // Ensures the cookie is only sent over HTTPS (use false for development)
-                        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-                    });
+                    // res.cookie('authToken', token, {
+                    //     httpOnly: false, // Helps prevent XSS attacks
+                    //     secure: false, // Ensures the cookie is only sent over HTTPS (use false for development)
+                    //     sameSite: 'none',
+                    //     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+                    // });
+                    // res.cookie('role', user.role, {
+                    //     httpOnly: false, // Helps prevent XSS attacks
+                    //     secure: false, // Ensures the cookie is only sent over HTTPS (use false for development)
+                    //     sameSite: 'none',
+                    //     maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+                    // });
 
-                    res.send({ mes: 'Login Successfull', user })
+                    res.send({ mes: 'Login Successfull', user,token })
                 }
                 else {
                     res.send({ mes: 'Temporarily Blocked By Admin' })

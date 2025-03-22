@@ -19,6 +19,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Switch from '@mui/material/Switch';
 import CreateContextApi from '../../ContextApi/CreateContextApi';
+import Cookies from "js-cookie";
 
 const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
@@ -358,34 +359,7 @@ export default function ManageOperators() {
     const [showAccountModal, setShowAccountModal] = useState(false);
     const [operator, setOperator] = useState();
     const [isOpen, setIsOpen] = useState(false);
-    const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
-    useEffect(() => {
-        const checkAuthToken = async () => {
-            try {
-                // Check if the authToken is available (from cookies or local storage)
-                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
-                    withCredentials: true,
-                });
-                console.log('isStynticate',response.data.isAuthenticated);
-                
-
-                if (response.data.isAuthenticated) {
-                    if (response.data.role === 'admin') {
-                        // If the token is valid, redirect the user
-                        navigate(`/manage-operators/${response.data.userId}`);
-                    }
-                    else {
-                        navigate(`/manage-pensioners/${response.data.userId}`);
-                    }
-                }
-            } catch (error) {
-                console.log('User is not authenticated or token is invalid.');
-                navigate('/')
-            }
-        };
-
-        checkAuthToken();
-    }, []);
+    const { isAuthenticated } = useContext(CreateContextApi);
 
     const getOperators = async () => {
         let data = await fetch(`https://fyp-enrollment-server.vercel.app/getOperators`);
@@ -479,103 +453,105 @@ export default function ManageOperators() {
 
 
     return (
-        <>
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="20%"
-                padding="2rem"
-                border="ActiveBorder"
-                fullWidth
-            >
-                <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
-                    <TableContainer>
-                        <Box display="flex" justifyContent="flex-start">
-                            <Button variant='contained' onClick={handleAddClick}>Add New Operator</Button>
-                        </Box>
-                        <Box display="flex" justifyContent="space-between" gap="10px" marginBottom="10px"
-                            marginTop="10px">
-                            <Box>
-                                <TextField
-                                    label="Search By CNIC"
-                                    variant="outlined"
-                                    value={filterText}
-                                    onChange={handleFilterChange}
-                                >
-
-                                </TextField>
+        isAuthenticated && isAuthenticated=='admin' ?
+            <>
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="20%"
+                    padding="2rem"
+                    border="ActiveBorder"
+                    fullWidth
+                >
+                    <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
+                        <TableContainer>
+                            <Box display="flex" justifyContent="flex-start">
+                                <Button variant='contained' onClick={handleAddClick}>Add New Operator</Button>
                             </Box>
-                            <Box>
-                                <TextField
-                                    label="Search By Name"
-                                    variant="outlined"
-                                    value={filterName}
-                                    onChange={handleFilterName}
-                                >
-
-                                </TextField>
-                            </Box>
-                        </Box>
-                        <hr></hr>
-                        <Table aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">CNIC</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Contact Number</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
-                                    <TableCell scope="col">Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {tempAllOperators !== null ? tempAllOperators.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((operator, index) => (
-                                    <TableRow
-                                        key={operator.id}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            <Box display="flex" justifyContent="space-between" gap="10px" marginBottom="10px"
+                                marginTop="10px">
+                                <Box>
+                                    <TextField
+                                        label="Search By CNIC"
+                                        variant="outlined"
+                                        value={filterText}
+                                        onChange={handleFilterChange}
                                     >
 
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.name}</TableCell>
+                                    </TextField>
+                                </Box>
+                                <Box>
+                                    <TextField
+                                        label="Search By Name"
+                                        variant="outlined"
+                                        value={filterName}
+                                        onChange={handleFilterName}
+                                    >
 
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.cnic}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.number}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{operator.address}</TableCell>
-                                        <TableCell align='center'>
-                                            <IconButton color='secondary' onClick={() => handleUpdateClick(operator)}>
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton color='secondary' onClick={() => enableDisableOperator(operator)}>
-                                                <Switch {...label} defaultChecked={operator.enable == false ? false : true} />
-                                            </IconButton>
-                                        </TableCell>
+                                    </TextField>
+                                </Box>
+                            </Box>
+                            <hr></hr>
+                            <Table aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ fontWeight: 'bold' }} scope="col">Name</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }} scope="col">CNIC</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }} scope="col">Contact Number</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }} scope="col">Address</TableCell>
+                                        <TableCell scope="col">Actions</TableCell>
                                     </TableRow>
-                                )) : (<TableRow><TableCell>Loading... </TableCell></TableRow>)}
-                            </TableBody>
-                        </Table>
-                        <TablePagination sx={{ fontSize: '1.1rem' }}
-                            component="div"
-                            count={allOperators != null ? allOperators.length : 0}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            rowsPerPage={rowsPerPage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                            rowsPerPageOptions={[5, 10, 25]}  // Options for rows per page
-                        />
-                    </TableContainer>
-                    <hr></hr>
-                </Card>
-            </Box>
-            <AddModal
-                show={showAddModal}
-                onClose={() => { setShowAddModal(false); getOperators() }}
-            // onUpdate={handleUpdate}
-            />
-            <UpdateModal
-                show={showUpdateModal}
-                onClose={() => { setShowUpdateModal(false); getOperators() }}
-                operator={operator}
-            // onUpdate={handleUpdate}
-            />
-        </>
+                                </TableHead>
+                                <TableBody>
+                                    {tempAllOperators !== null ? tempAllOperators.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((operator, index) => (
+                                        <TableRow
+                                            key={operator.id}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+
+                                            <TableCell sx={{ fontSize: '1.1rem' }}>{operator.name}</TableCell>
+
+                                            <TableCell sx={{ fontSize: '1.1rem' }}>{operator.cnic}</TableCell>
+                                            <TableCell sx={{ fontSize: '1.1rem' }}>{operator.number}</TableCell>
+                                            <TableCell sx={{ fontSize: '1.1rem' }}>{operator.address}</TableCell>
+                                            <TableCell align='center'>
+                                                <IconButton color='secondary' onClick={() => handleUpdateClick(operator)}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton color='secondary' onClick={() => enableDisableOperator(operator)}>
+                                                    <Switch {...label} defaultChecked={operator.enable == false ? false : true} />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    )) : (<TableRow><TableCell>Loading... </TableCell></TableRow>)}
+                                </TableBody>
+                            </Table>
+                            <TablePagination sx={{ fontSize: '1.1rem' }}
+                                component="div"
+                                count={allOperators != null ? allOperators.length : 0}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                rowsPerPage={rowsPerPage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                rowsPerPageOptions={[5, 10, 25]}  // Options for rows per page
+                            />
+                        </TableContainer>
+                        <hr></hr>
+                    </Card>
+                </Box>
+                <AddModal
+                    show={showAddModal}
+                    onClose={() => { setShowAddModal(false); getOperators() }}
+                // onUpdate={handleUpdate}
+                />
+                <UpdateModal
+                    show={showUpdateModal}
+                    onClose={() => { setShowUpdateModal(false); getOperators() }}
+                    operator={operator}
+                // onUpdate={handleUpdate}
+                />
+            </>
+            : <>{navigate('/')}</>
     )
 }

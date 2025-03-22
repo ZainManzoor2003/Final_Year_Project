@@ -795,7 +795,7 @@ const AddModal = ({ show, onClose, updateVerify }) => {
 
 
 export default function ManagePensioners() {
-    const { setCurrentPensionerData } = useContext(CreateContextApi);
+    const { setCurrentPensionerData,isAuthenticated } = useContext(CreateContextApi);
     const [allPensioners, setAllPensioners] = useState([]);
     const [tempAllPensioner, setTempAllPensioners] = useState([]);
     const [filterText, setFilterText] = useState("")
@@ -811,35 +811,6 @@ export default function ManagePensioners() {
     const [pensioner, setPensioner] = useState();
     const [isOpen, setIsOpen] = useState(false);
     const [showVerificationModal, setShowVerificationModal] = useState(false);
-    const { adminInfo, setAdminInfo } = useContext(CreateContextApi)
-
-    useEffect(() => {
-        const checkAuthToken = async () => {
-            try {
-                // Check if the authToken is available (from cookies or local storage)
-                const response = await axios.get('https://fyp-enrollment-server.vercel.app/verify-token', {
-                    withCredentials: true,
-                });
-
-                if (response.data.isAuthenticated) {
-                    
-                    if (response.data.role === 'admin') {
-                        // If the token is valid, redirect the user
-                        navigate(`/manage-operators/${response.data.userId}`);
-                    }
-                    else {
-                        navigate(`/manage-pensioners/${response.data.userId}`);
-                    }
-                }
-            } catch (error) {
-                console.log('User is not authenticated or token is invalid.');
-                navigate('/')
-            }
-        };
-
-        checkAuthToken();
-    }, []);
-
     const getPensioners = async () => {
         let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
         let res = await data.json();
@@ -925,6 +896,7 @@ export default function ManagePensioners() {
 
 
     return (
+        isAuthenticated && isAuthenticated=='operator' ?
         <>
             <Box
                 display="flex"
@@ -1047,6 +1019,7 @@ export default function ManagePensioners() {
             />
             <ToastContainer />
         </>
+        :<>{navigate('/')}</>
     )
 }
 
