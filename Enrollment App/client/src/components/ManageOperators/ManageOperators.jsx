@@ -97,7 +97,7 @@ const UpdateModal = ({ show, onClose, operator }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`http://localhost:3001/updateOperator`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/updateOperator`, currentOperator)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
@@ -260,7 +260,7 @@ const AddModal = ({ show, onClose }) => {
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`http://localhost:3001/addOperator`, currentOperator)
+            await axios.post(`https://fyp-enrollment-server.vercel.app/addOperator`, currentOperator)
                 .then((res) => {
                     alert(res.data.mes);
                     onClose()
@@ -362,7 +362,7 @@ export default function ManageOperators() {
     const { isAuthenticated } = useContext(CreateContextApi);
 
     const getOperators = async () => {
-        let data = await fetch(`http://localhost:3001/getOperators`);
+        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getOperators`);
         let res = await data.json();
         setAllOperators(res);
         setTempAllOperators(res)
@@ -377,7 +377,7 @@ export default function ManageOperators() {
 
     const enableDisableOperator = async (operator) => {
         try {
-            await axios.post('http://localhost:3001/enableDisableOperator', operator)
+            await axios.post('https://fyp-enrollment-server.vercel.app/enableDisableOperator', operator)
                 .then((res) => {
                     if (res.data.message === 'Successfull') {
                         getOperators()
