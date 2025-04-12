@@ -25,6 +25,7 @@ const settings = ['Account', 'Logout'];
 const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
 
     const [admin, setAdmin] = React.useState({});
+    const { setIsAuthenticated } = React.useContext(CreateContextApi)
 
     React.useEffect(() => {
         if (adminInfo) {
@@ -88,16 +89,23 @@ const UpdateAccountModal = ({ show, onClose, adminInfo }) => {
 
         return true;
     };
+    const handleLogout = async () => {
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('role')
+        setIsAuthenticated('')
+        navigate('/')
+    }
 
 
     const handleSubmit = async () => {
         if (!validateFields()) return;
         try {
-            await axios.post(`https://fyp-enrollment-server.vercel.app/updateOperator`, admin)
+            await axios.post(`http://localhost:3001/updateOperator`, admin)
                 .then((res) => {
                     alert(res.data.message);
                     onClose()
                 })
+            handleLogout()
 
         } catch (err) {
             alert(err.message)
@@ -190,7 +198,7 @@ function Navbar() {
     }
 
     const getAccountInfo = async () => {
-        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getAccountInfo/${id}`);
+        let data = await fetch(`http://localhost:3001/getAccountInfo/${id}`);
         let res = await data.json();
         setAdminInfo(res);
     }
@@ -199,15 +207,6 @@ function Navbar() {
         localStorage.removeItem('role')
         setIsAuthenticated('')
         navigate('/')
-        // try {
-        //     await axios.post("https://fyp-enrollment-server.vercel.app/logout", {}, { withCredentials: true });
-        //     setIsAdminAuthenticated(false)
-        //     setIsOperatorAuthenticated(false)
-        //     navigate('/')
-        // } catch (error) {
-        //     console.error("Logout failed:", error);
-        // }
-
     }
 
     React.useEffect(() => {

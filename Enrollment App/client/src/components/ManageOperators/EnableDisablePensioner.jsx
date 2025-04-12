@@ -34,7 +34,7 @@ export default function EnableDisablePensioner() {
     
 
     const getPensioners = async () => {
-        let data = await fetch(`https://fyp-enrollment-server.vercel.app/getPensioners`);
+        let data = await fetch(`http://localhost:3001/getPensioners`);
         let res = await data.json();
         setAllPensioners(res);
         setTempAllPensioners(res)
@@ -82,7 +82,7 @@ export default function EnableDisablePensioner() {
     };
     const enableDisablePensioner = async (pensioner) => {
         try {
-            await axios.post('https://fyp-enrollment-server.vercel.app/enableDisablePensioner', pensioner)
+            await axios.post('http://localhost:3001/enableDisablePensioner', pensioner)
                 .then((res) => {
                     if (res.data.message === 'Successfull') {
                         getPensioners()
@@ -108,7 +108,8 @@ export default function EnableDisablePensioner() {
                 <Card sx={{ width: '90%', padding: '2rem', border: '2px solid black', borderRadius: '8px' }}>
                     <TableContainer>
 
-                        <Box display="flex" justifyContent="flex-end" gap="10px" marginBottom="10px">
+                        <Box display="flex" justifyContent="space-between" gap="10px" marginBottom="10px"
+                                marginTop="10px">
 
                             <Box>
                                 <TextField

@@ -61,7 +61,7 @@ export default function Login() {
                 const token = localStorage.getItem('authToken');
                 
                 // Check if the authToken is available (from cookies or local storage)
-                const response = await axios.post('https://fyp-enrollment-server.vercel.app/verify-token', {token:token}, {
+                const response = await axios.post('http://localhost:3001/verify-token', {token:token}, {
                     withCredentials: true,
                 });
 
@@ -86,7 +86,7 @@ export default function Login() {
         if (!validateFields()) return;
         else {
             setLoading(true)
-            await axios.post(`https://fyp-enrollment-server.vercel.app/login`, user,
+            await axios.post(`http://localhost:3001/login`, user,
                 { withCredentials: true }).then((res) => {
                     // setLoading(!loading)
                     if (res.data.mes === 'Login Successfull') {
